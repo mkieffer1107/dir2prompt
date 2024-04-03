@@ -5,7 +5,7 @@
 
 `dir2prompt` is a Python package that generates prompts for long-context language models (LLMs) from the contents of a directory. It creates a tree representation of the directory structure and includes the contents of each file in the prompt, allowing you to easily feed the information from a directory to an LLM.
 
-## Installation
+## Installation 💻
 
 You can install `dir2prompt` using pip:
 
@@ -13,7 +13,7 @@ You can install `dir2prompt` using pip:
 pip install dir2prompt
 ```
 
-## Usage
+## Usage 🚀
 
 To generate a prompt from a directory, use the `d2p` command followed by the desired options:
 
@@ -25,7 +25,7 @@ This command will generate a prompt for the specified directory, including only 
 
 The generated prompt will be saved as a `.txt` file in the current directory with the name `<directory_name>_prompt.txt`.
 
-## Options
+## Options ⚙️
 
 --`dir`: The directory to generate the prompt for (default: current directory).
 
@@ -42,13 +42,14 @@ The generated prompt will be saved as a `.txt` file in the current directory wit
 --`config`: Path to a custom configuration file (default: `config.json` in the package directory).
 
 
-## Configuration
+## Configuration 📋
 
 `dir2prompt` uses a configuration file (`config.json`) to specify the default directories and files to ignore. You can provide a custom configuration file using the `--config` option.
 
 The default `config.json` file includes commonly ignored directories and files. You can modify this file or create your own to suit your needs.
 
-Example
+## Example 🌟
+
 Here's an example of using `dir2prompt` to generate a prompt for a Python project directory:
 
 ```sh
@@ -116,11 +117,11 @@ if __name__ == "__main__":
 
 You can then feed this prompt to an LLM to provide it with context about your project.
 
-## License 
+## License 📄
 
 `dir2prompt` is released under the MIT License.
 
-## Contributing
+## Contributing 🤝
 
 Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
 
