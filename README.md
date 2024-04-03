@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/dir2prompt.svg)](https://badge.fury.io/py/dir2prompt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-When you feel too lazy to selectively copy code from all the various files in your project, just copy it all!
+When you feel too lazy to selectively copy code from all the various files in your project, just copy it all! Inspired by [repo2prompt](https://github.com/andrewgcodes/repo2prompt).
 
 ## Installation 💻
 
