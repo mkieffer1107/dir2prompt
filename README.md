@@ -28,11 +28,17 @@ The generated prompt will be saved as a `.txt` file in the current directory wit
 ## Options
 
 --`dir`: The directory to generate the prompt for (default: current directory).
+
 --`filters`: File extensions to include in the prompt (default: all files).
+
 --`outpath`: The output path for the prompt file (default: current directory).
+
 --`outfile`: The name of the output file (default: `<directory_name>_prompt`).
+
 --`ignore-dir`: Additional directories to ignore (e.g., `.git`, `__pycache__`).
+
 --`ignore-file`: Additional file types to ignore (e.g., `.DS_Store`, `.log`).
+
 --`config`: Path to a custom configuration file (default: `config.json` in the package directory).
 
 
