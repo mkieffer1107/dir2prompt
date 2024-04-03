@@ -1,0 +1,3491 @@
+<context>
+<directory_tree>
+dir2prompt/
+├── .DS_Store
+├── .gitignore
+├── LICENSE
+├── README.md
+├── dir2prompt_prompt.txt
+├── pyproject.toml
+├── setup.py
+└── src/
+│   ├── __init__.py
+│   ├── config.json
+│   └── d2p.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>LICENSE</path>
+<content>
+MIT License
+
+Copyright (c) 2024 mkieffer1107
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+</content>
+</file>
+
+<file>
+<path>README.md</path>
+<content>
+# dir2prompt
+
+[![PyPI version](https://badge.fury.io/py/dir2prompt.svg)](https://badge.fury.io/py/dir2prompt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+When you feel too lazy to selectively copy code from all the various files in your project, just copy it all!
+
+## Installation 💻
+
+You can install `dir2prompt` using pip:
+
+```sh
+pip install dir2prompt
+```
+
+## Usage 🚀
+
+To generate a prompt from a directory, use the `d2p` command followed by the desired options:
+
+```sh
+d2p --dir [directory path] --filters [file extensions] --outpath [output path] --outfile [output file name] --ignore-dir [directories to ignore] --ignore-file [files to ignore] --config [path to config file]
+
+```
+
+## Options ⚙️
+
+`--dir`: The directory to generate the prompt for (default: current directory).
+
+`--filters`: File extensions to include in the prompt (default: all files).
+
+`--outpath`: The output path for the prompt file (default: current directory).
+
+`--outfile`: The name of the output file (default: `<directory_name>_prompt`).
+
+`--ignore-dir`: Additional directories to ignore (e.g., `experiments`, `run*`).
+
+`--ignore-file`: Additional file types to ignore (e.g., `.pt`, `.rs`).
+
+`--config`: Path to a custom config file (default: `config.json` in the package directory).
+
+## Example 🌟
+
+Here's an example of how to use `dir2prompt` to generate a prompt:
+
+```sh
+d2p --dir /path/<dir_name> --filters .py .txt --ignore-dir experiments __pycache__ --ignore-file old.py
+```
+
+This command will generate a prompt for the specified directory, including only files with the extensions `.py` and `.txt`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
+
+Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag.
+
+In this example, the generated prompt will be saved as a `.txt` file in the directory that `d2p` is called in with the name `<dir_name>_prompt.txt`, and will have the following structure:
+
+**<dir_name>_prompt.txt**
+```xml
+<context>
+<directory_tree>
+project/
+├── README.md
+├── experiments/
+├── requirements.txt
+└── src/
+    ├── __init__.py
+    ├── main.py
+    └── old.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>README.md</path>
+<content>
+# Project Title
+
+This is an example Python project.
+</content>
+</file>
+
+<file>
+<path>requirements.txt</path>
+<content>
+numpy==1.21.0
+pandas==1.3.0
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/main.py</path>
+<content>
+import numpy as np
+import pandas as pd
+
+def main():
+    print("Hello, World!")
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+```
+
+You can then feed this prompt into an LLM to provide it with context about your project 🦾
+
+## Config File 📋
+
+`dir2prompt` uses a config file, `config.json`, to list common directories and files that should be ignored and excluded from the prompt. You can customize the behavior by supplying your own config file using the `--config` option:
+
+**example.json**
+```json
+{
+    "IGNORE_DIRS": [
+        "experiments",
+        "run*",
+        ...
+    ],
+    "IGNORE_FILES": [
+        ".pt",
+        ".rs",
+        ...
+    ]
+}
+```
+
+
+
+
+
+## License 📄
+
+`dir2prompt` is released under the MIT License 🤓
+
+## Contributing 🤝
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+
+
+
+</content>
+</file>
+
+<file>
+<path>dir2prompt_prompt.txt</path>
+<content>
+<context>
+<directory_tree>
+dir2prompt/
+├── .DS_Store
+├── .gitignore
+├── LICENSE
+├── README.md
+├── dir2prompt_prompt.txt
+├── pyproject.toml
+├── setup.py
+└── src/
+│   ├── __init__.py
+│   ├── config.json
+│   └── d2p.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>LICENSE</path>
+<content>
+MIT License
+
+Copyright (c) 2024 mkieffer1107
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+</content>
+</file>
+
+<file>
+<path>README.md</path>
+<content>
+# dir2prompt
+
+[![PyPI version](https://badge.fury.io/py/dir2prompt.svg)](https://badge.fury.io/py/dir2prompt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+When you feel too lazy to selectively copy code from all the various files in your project, just copy it all!
+
+## Installation 💻
+
+You can install `dir2prompt` using pip:
+
+```sh
+pip install dir2prompt
+```
+
+## Usage 🚀
+
+To generate a prompt from a directory, use the `d2p` command followed by the desired options:
+
+```sh
+d2p --dir [directory path] --filters [file extensions] --outpath [output path] --outfile [output file name] --ignore-dir [directories to ignore] --ignore-file [files to ignore] --config [path to config file]
+
+```
+
+## Options ⚙️
+
+`--dir`: The directory to generate the prompt for (default: current directory).
+
+`--filters`: File extensions to include in the prompt (default: all files).
+
+`--outpath`: The output path for the prompt file (default: current directory).
+
+`--outfile`: The name of the output file (default: `<directory_name>_prompt`).
+
+`--ignore-dir`: Additional directories to ignore (e.g., `experiments`, `run*`).
+
+`--ignore-file`: Additional file types to ignore (e.g., `.pt`, `.rs`).
+
+`--config`: Path to a custom config file (default: `config.json` in the package directory).
+
+## Example 🌟
+
+Here's an example of how to use `dir2prompt` to generate a prompt:
+
+```sh
+d2p --dir /path/<dir_name> --filters .py .txt --ignore-dir experiments __pycache__ --ignore-file old.py
+```
+
+This command will generate a prompt for the specified directory, including only files with the extensions `.py` and `.txt`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
+
+Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag.
+
+In this example, the generated prompt will be saved as a `.txt` file in the directory that `d2p` is called in with the name `<dir_name>_prompt.txt`, and will have the following structure:
+
+**<dir_name>_prompt.txt**
+```xml
+<context>
+<directory_tree>
+project/
+├── README.md
+├── experiments/
+├── requirements.txt
+└── src/
+    ├── __init__.py
+    ├── main.py
+    └── old.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>README.md</path>
+<content>
+# Project Title
+
+This is an example Python project.
+</content>
+</file>
+
+<file>
+<path>requirements.txt</path>
+<content>
+numpy==1.21.0
+pandas==1.3.0
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/main.py</path>
+<content>
+import numpy as np
+import pandas as pd
+
+def main():
+    print("Hello, World!")
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+```
+
+You can then feed this prompt into an LLM to provide it with context about your project 🦾
+
+## Config File 📋
+
+`dir2prompt` uses a config file, `config.json`, to list common directories and files that should be ignored and excluded from the prompt. You can customize the behavior by supplying your own config file using the `--config` option:
+
+**example.json**
+```json
+{
+    "IGNORE_DIRS": [
+        "experiments",
+        "run*",
+        ...
+    ],
+    "IGNORE_FILES": [
+        ".pt",
+        ".rs",
+        ...
+    ]
+}
+```
+
+
+
+
+
+## License 📄
+
+`dir2prompt` is released under the MIT License 🤓
+
+## Contributing 🤝
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+
+
+
+</content>
+</file>
+
+<file>
+<path>dir2prompt_prompt.txt</path>
+<content>
+<context>
+<directory_tree>
+dir2prompt/
+├── .DS_Store
+├── .gitignore
+├── LICENSE
+├── README.md
+├── dir2prompt_prompt.txt
+├── pyproject.toml
+├── setup.py
+└── src/
+│   ├── __init__.py
+│   ├── config.json
+│   └── d2p.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>LICENSE</path>
+<content>
+MIT License
+
+Copyright (c) 2024 mkieffer1107
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+</content>
+</file>
+
+<file>
+<path>README.md</path>
+<content>
+# dir2prompt
+
+[![PyPI version](https://badge.fury.io/py/dir2prompt.svg)](https://badge.fury.io/py/dir2prompt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+When you feel too lazy to selectively copy code from all the various files in your project, just copy it all!
+
+## Installation 💻
+
+You can install `dir2prompt` using pip:
+
+```sh
+pip install dir2prompt
+```
+
+## Usage 🚀
+
+To generate a prompt from a directory, use the `d2p` command followed by the desired options:
+
+```sh
+d2p --dir [directory path] --filters [file extensions] --outpath [output path] --outfile [output file name] --ignore-dir [directories to ignore] --ignore-file [files to ignore] --config [path to config file]
+
+```
+
+## Options ⚙️
+
+`--dir`: The directory to generate the prompt for (default: current directory).
+
+`--filters`: File extensions to include in the prompt (default: all files).
+
+`--outpath`: The output path for the prompt file (default: current directory).
+
+`--outfile`: The name of the output file (default: `<directory_name>_prompt`).
+
+`--ignore-dir`: Additional directories to ignore (e.g., `experiments`, `run*`).
+
+`--ignore-file`: Additional file types to ignore (e.g., `.pt`, `.rs`).
+
+`--config`: Path to a custom config file (default: `config.json` in the package directory).
+
+## Example 🌟
+
+Here's an example of how to use `dir2prompt` to generate a prompt:
+
+```sh
+d2p --dir /path/<dir_name> --filters .py .txt --ignore-dir experiments __pycache__ --ignore-file old.py
+```
+
+This command will generate a prompt for the specified directory, including only files with the extensions `.py` and `.txt`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
+
+Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag.
+
+In this example, the generated prompt will be saved as a `.txt` file in the directory that `d2p` is called in with the name `<dir_name>_prompt.txt`, and will have the following structure:
+
+**<dir_name>_prompt.txt**
+```xml
+<context>
+<directory_tree>
+project/
+├── README.md
+├── experiments/
+├── requirements.txt
+└── src/
+    ├── __init__.py
+    ├── main.py
+    └── old.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>README.md</path>
+<content>
+# Project Title
+
+This is an example Python project.
+</content>
+</file>
+
+<file>
+<path>requirements.txt</path>
+<content>
+numpy==1.21.0
+pandas==1.3.0
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/main.py</path>
+<content>
+import numpy as np
+import pandas as pd
+
+def main():
+    print("Hello, World!")
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+```
+
+You can then feed this prompt into an LLM to provide it with context about your project 🦾
+
+## Config File 📋
+
+`dir2prompt` uses a config file, `config.json`, to list common directories and files that should be ignored and excluded from the prompt. You can customize the behavior by supplying your own config file using the `--config` option:
+
+**example.json**
+```json
+{
+    "IGNORE_DIRS": [
+        "experiments",
+        "run*",
+        ...
+    ],
+    "IGNORE_FILES": [
+        ".pt",
+        ".rs",
+        ...
+    ]
+}
+```
+
+
+
+
+
+## License 📄
+
+`dir2prompt` is released under the MIT License 🤓
+
+## Contributing 🤝
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+
+
+
+</content>
+</file>
+
+<file>
+<path>dir2prompt_prompt.txt</path>
+<content>
+<context>
+<directory_tree>
+dir2prompt/
+├── .DS_Store
+├── .gitignore
+├── LICENSE
+├── README.md
+├── dir2prompt_prompt.txt
+├── pyproject.toml
+├── setup.py
+└── src/
+│   ├── __init__.py
+│   ├── config.json
+│   └── d2p.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>LICENSE</path>
+<content>
+MIT License
+
+Copyright (c) 2024 mkieffer1107
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+</content>
+</file>
+
+<file>
+<path>README.md</path>
+<content>
+# dir2prompt
+
+[![PyPI version](https://badge.fury.io/py/dir2prompt.svg)](https://badge.fury.io/py/dir2prompt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+When you feel too lazy to selectively copy code from all the various files in your project, just copy it all!
+
+## Installation 💻
+
+You can install `dir2prompt` using pip:
+
+```sh
+pip install dir2prompt
+```
+
+## Usage 🚀
+
+To generate a prompt from a directory, use the `d2p` command followed by the desired options:
+
+```sh
+d2p --dir [directory path] --filters [file extensions] --outpath [output path] --outfile [output file name] --ignore-dir [directories to ignore] --ignore-file [files to ignore] --config [path to config file]
+
+```
+
+## Options ⚙️
+
+`--dir`: The directory to generate the prompt for (default: current directory).
+
+`--filters`: File extensions to include in the prompt (default: all files).
+
+`--outpath`: The output path for the prompt file (default: current directory).
+
+`--outfile`: The name of the output file (default: `<directory_name>_prompt`).
+
+`--ignore-dir`: Additional directories to ignore (e.g., `experiments`, `run*`).
+
+`--ignore-file`: Additional file types to ignore (e.g., `.pt`, `.rs`).
+
+`--config`: Path to a custom config file (default: `config.json` in the package directory).
+
+## Example 🌟
+
+Here's an example of how to use `dir2prompt` to generate a prompt:
+
+```sh
+d2p --dir /path/<dir_name> --filters .py .txt --ignore-dir experiments __pycache__ --ignore-file old.py
+```
+
+This command will generate a prompt for the specified directory, including only files with the extensions `.py` and `.txt`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
+
+Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag.
+
+In this example, the generated prompt will be saved as a `.txt` file in the directory that `d2p` is called in with the name `<dir_name>_prompt.txt`, and will have the following structure:
+
+**<dir_name>_prompt.txt**
+```xml
+<context>
+<directory_tree>
+project/
+├── README.md
+├── experiments/
+├── requirements.txt
+└── src/
+    ├── __init__.py
+    ├── main.py
+    └── old.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>README.md</path>
+<content>
+# Project Title
+
+This is an example Python project.
+</content>
+</file>
+
+<file>
+<path>requirements.txt</path>
+<content>
+numpy==1.21.0
+pandas==1.3.0
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/main.py</path>
+<content>
+import numpy as np
+import pandas as pd
+
+def main():
+    print("Hello, World!")
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+```
+
+You can then feed this prompt into an LLM to provide it with context about your project 🦾
+
+## Config File 📋
+
+`dir2prompt` uses a config file, `config.json`, to list common directories and files that should be ignored and excluded from the prompt. You can customize the behavior by supplying your own config file using the `--config` option:
+
+**example.json**
+```json
+{
+    "IGNORE_DIRS": [
+        "experiments",
+        "run*",
+        ...
+    ],
+    "IGNORE_FILES": [
+        ".pt",
+        ".rs",
+        ...
+    ]
+}
+```
+
+
+
+
+
+## License 📄
+
+`dir2prompt` is released under the MIT License 🤓
+
+## Contributing 🤝
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+
+
+
+</content>
+</file>
+
+<file>
+<path>dir2prompt_prompt.txt</path>
+<content>
+<context>
+<directory_tree>
+dir2prompt/
+├── .DS_Store
+├── .gitignore
+├── LICENSE
+├── README.md
+├── config.json
+├── dir2prompt_prompt.txt
+├── pyproject.toml
+├── setup.py
+└── src/
+│   ├── __init__.py
+│   └── d2p.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>LICENSE</path>
+<content>
+MIT License
+
+Copyright (c) 2024 mkieffer1107
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+</content>
+</file>
+
+<file>
+<path>README.md</path>
+<content>
+# dir2prompt
+
+[![PyPI version](https://badge.fury.io/py/dir2prompt.svg)](https://badge.fury.io/py/dir2prompt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+When you feel too lazy to selectively copy code from all the various files in your project, just copy it all!
+
+## Installation 💻
+
+You can install `dir2prompt` using pip:
+
+```sh
+pip install dir2prompt
+```
+
+## Usage 🚀
+
+To generate a prompt from a directory, use the `d2p` command followed by the desired options:
+
+```sh
+d2p --dir [directory path] --filters [file extensions] --outpath [output path] --outfile [output file name] --ignore-dir [directories to ignore] --ignore-file [files to ignore] --config [path to config file]
+
+```
+
+## Options ⚙️
+
+`--dir`: The directory to generate the prompt for (default: current directory).
+
+`--filters`: File extensions to include in the prompt (default: all files).
+
+`--outpath`: The output path for the prompt file (default: current directory).
+
+`--outfile`: The name of the output file (default: `<directory_name>_prompt`).
+
+`--ignore-dir`: Additional directories to ignore (e.g., `experiments`, `run*`).
+
+`--ignore-file`: Additional file types to ignore (e.g., `.pt`, `.rs`).
+
+`--config`: Path to a custom config file (default: `config.json` in the package directory).
+
+## Example 🌟
+
+Here's an example of how to use `dir2prompt` to generate a prompt:
+
+```sh
+d2p --dir /path/<dir_name> --filters .py .txt --ignore-dir experiments __pycache__ --ignore-file old.py
+```
+
+This command will generate a prompt for the specified directory, including only files with the extensions `.py` and `.txt`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
+
+Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag.
+
+In this example, the generated prompt will be saved as a `.txt` file in the directory that `d2p` is called in with the name `<dir_name>_prompt.txt`, and will have the following structure:
+
+**<dir_name>_prompt.txt**
+```xml
+<context>
+<directory_tree>
+project/
+├── README.md
+├── experiments/
+├── requirements.txt
+└── src/
+    ├── __init__.py
+    ├── main.py
+    └── old.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>README.md</path>
+<content>
+# Project Title
+
+This is an example Python project.
+</content>
+</file>
+
+<file>
+<path>requirements.txt</path>
+<content>
+numpy==1.21.0
+pandas==1.3.0
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/main.py</path>
+<content>
+import numpy as np
+import pandas as pd
+
+def main():
+    print("Hello, World!")
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+```
+
+You can then feed this prompt into an LLM to provide it with context about your project 🦾
+
+## Config File 📋
+
+`dir2prompt` uses a config file, `config.json`, to list common directories and files that should be ignored and excluded from the prompt. You can customize the behavior by supplying your own config file using the `--config` option:
+
+**example.json**
+```json
+{
+    "IGNORE_DIRS": [
+        "experiments",
+        "run*",
+        ...
+    ],
+    "IGNORE_FILES": [
+        ".pt",
+        ".rs",
+        ...
+    ]
+}
+```
+
+
+
+
+
+## License 📄
+
+`dir2prompt` is released under the MIT License 🤓
+
+## Contributing 🤝
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+
+
+
+</content>
+</file>
+
+<file>
+<path>config.json</path>
+<content>
+{
+    "IGNORE_DIRS": [
+        "__pycache__",
+        ".git",
+        ".idea",
+        "node_modules",
+        "target",
+        "build",
+        "dist",
+        "out",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        ".pytest_cache",
+        ".cache",
+        ".mypy_cache",
+        ".hypothesis",
+        ".ipynb_checkpoints",
+        "*.egg-info"
+    ],
+    "IGNORE_FILES": [
+        ".DS_Store",
+        ".gitignore",
+        "Thumbs.db",
+        "desktop.ini",
+        ".pytest_cache",
+        ".coverage",
+        ".coveragerc",
+        "coverage.xml",
+        "nosetests.xml",
+        "junit.xml",
+        "pytest.xml",
+        "TEST-*.xml",
+        "*.log",
+        "*.out",
+        "*.bak",
+        "*.swp",
+        "*.swo",
+        "*~",
+        "*.pyc",
+        "*.pyo",
+        "*.pyd",
+        "*.class",
+        "*.dll",
+        "*.exe",
+        "*.o",
+        "*.obj",
+        "*.so",
+        "*.a",
+        "*.lib",
+        "*.pdb"
+    ]
+}
+</content>
+</file>
+
+<file>
+<path>dir2prompt_prompt.txt</path>
+<content>
+<context>
+<directory_tree>
+dir2prompt/
+├── .DS_Store
+├── .gitignore
+├── LICENSE
+├── README.md
+├── config.json
+├── pyproject.toml
+├── setup.py
+└── src/
+│   ├── __init__.py
+│   └── d2p.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>LICENSE</path>
+<content>
+MIT License
+
+Copyright (c) 2024 mkieffer1107
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+</content>
+</file>
+
+<file>
+<path>README.md</path>
+<content>
+# dir2prompt
+
+[![PyPI version](https://badge.fury.io/py/dir2prompt.svg)](https://badge.fury.io/py/dir2prompt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+When you feel too lazy to selectively copy code from all the various files in your project, just copy it all!
+
+## Installation 💻
+
+You can install `dir2prompt` using pip:
+
+```sh
+pip install dir2prompt
+```
+
+## Usage 🚀
+
+To generate a prompt from a directory, use the `d2p` command followed by the desired options:
+
+```sh
+d2p --dir [directory path] --filters [file extensions] --outpath [output path] --outfile [output file name] --ignore-dir [directories to ignore] --ignore-file [files to ignore] --config [path to config file]
+
+```
+
+## Options ⚙️
+
+`--dir`: The directory to generate the prompt for (default: current directory).
+
+`--filters`: File extensions to include in the prompt (default: all files).
+
+`--outpath`: The output path for the prompt file (default: current directory).
+
+`--outfile`: The name of the output file (default: `<directory_name>_prompt`).
+
+`--ignore-dir`: Additional directories to ignore (e.g., `experiments`, `run*`).
+
+`--ignore-file`: Additional file types to ignore (e.g., `.pt`, `.rs`).
+
+`--config`: Path to a custom config file (default: `config.json` in the package directory).
+
+## Example 🌟
+
+Here's an example of how to use `dir2prompt` to generate a prompt:
+
+```sh
+d2p --dir /path/<dir_name> --filters .py .txt --ignore-dir experiments __pycache__ --ignore-file old.py
+```
+
+This command will generate a prompt for the specified directory, including only files with the extensions `.py` and `.txt`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
+
+Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag.
+
+In this example, the generated prompt will be saved as a `.txt` file in the directory that `d2p` is called in with the name `<dir_name>_prompt.txt`, and will have the following structure:
+
+**<dir_name>_prompt.txt**
+```xml
+<context>
+<directory_tree>
+project/
+├── README.md
+├── experiments/
+├── requirements.txt
+└── src/
+    ├── __init__.py
+    ├── main.py
+    └── old.py
+</directory_tree>
+
+<files>
+
+<file>
+<path>README.md</path>
+<content>
+# Project Title
+
+This is an example Python project.
+</content>
+</file>
+
+<file>
+<path>requirements.txt</path>
+<content>
+numpy==1.21.0
+pandas==1.3.0
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/main.py</path>
+<content>
+import numpy as np
+import pandas as pd
+
+def main():
+    print("Hello, World!")
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+```
+
+You can then feed this prompt into an LLM to provide it with context about your project 🦾
+
+## Config File 📋
+
+`dir2prompt` uses a config file, `config.json`, to list common directories and files that should be ignored and excluded from the prompt. You can customize the behavior by supplying your own config file using the `--config` option:
+
+**example.json**
+```json
+{
+    "IGNORE_DIRS": [
+        "experiments",
+        "run*",
+        ...
+    ],
+    "IGNORE_FILES": [
+        ".pt",
+        ".rs",
+        ...
+    ]
+}
+```
+
+
+
+
+
+## License 📄
+
+`dir2prompt` is released under the MIT License 🤓
+
+## Contributing 🤝
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+
+
+
+</content>
+</file>
+
+<file>
+<path>config.json</path>
+<content>
+{
+    "IGNORE_DIRS": [
+        "__pycache__",
+        ".git",
+        ".idea",
+        "node_modules",
+        "target",
+        "build",
+        "dist",
+        "out",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        ".pytest_cache",
+        ".cache",
+        ".mypy_cache",
+        ".hypothesis",
+        ".ipynb_checkpoints",
+        "*.egg-info"
+    ],
+    "IGNORE_FILES": [
+        ".DS_Store",
+        ".gitignore",
+        "Thumbs.db",
+        "desktop.ini",
+        ".pytest_cache",
+        ".coverage",
+        ".coveragerc",
+        "coverage.xml",
+        "nosetests.xml",
+        "junit.xml",
+        "pytest.xml",
+        "TEST-*.xml",
+        "*.log",
+        "*.out",
+        "*.bak",
+        "*.swp",
+        "*.swo",
+        "*~",
+        "*.pyc",
+        "*.pyo",
+        "*.pyd",
+        "*.class",
+        "*.dll",
+        "*.exe",
+        "*.o",
+        "*.obj",
+        "*.so",
+        "*.a",
+        "*.lib",
+        "*.pdb"
+    ]
+}
+</content>
+</file>
+
+<file>
+<path>pyproject.toml</path>
+<content>
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dir2prompt_test"
+version = "1.0.0"
+license = {file = "LICENSE"}
+authors = [
+  { name="Max Kieffer", email="wkieffer@ufl.edu" },
+]
+description = "A tool to generate prompts from directory contents"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+keywords = [
+    "prompt engineering",
+    "large language model",
+    "directory structure",
+    "prompt generation",
+    "file tree visualization",
+    "directory to prompt",
+    "automation tools",
+    "developer utilities",
+    "code documentation",
+]
+
+[project.urls]
+Homepage = "https://github.com/mkieffer1107/dir2prompt"
+Issues = "https://github.com/mkieffer1107/dir2prompt/issues"
+
+[tool.setuptools]
+packages = ["src"]
+package-data = {"src" = ["config.json"]}
+
+[project.scripts]
+d2p = "src.d2p:main"
+</content>
+</file>
+
+<file>
+<path>setup.py</path>
+<content>
+from setuptools import setup, find_packages
+
+setup(
+    name="dir2prompt",
+    version="1.0.0",
+    packages=find_packages(),
+    package_data={
+        "src": ["config.json"],   
+    },
+    entry_points={
+        "console_scripts": [
+            "d2p=src.d2p:main"
+        ],
+    },
+    author="Max Kieffer",
+    author_email="wkieffer@ufl.edu",
+    description="A tool to generate prompts from directory contents",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/mkieffer1107/dir2prompt",
+    license="MIT",
+    keywords=[
+        "prompt engineering",
+        "large language model",
+        "directory structure",
+        "prompt generation",
+        "file tree visualization",
+        "directory to prompt",
+        "automation tools",
+        "developer utilities",
+        "code documentation",
+    ],
+    python_requires=">=3.6",
+    install_requires=[],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
+)
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/d2p.py</path>
+<content>
+import os
+import json
+import fnmatch
+import argparse
+import pkg_resources
+
+def build_directory_tree(
+        dir: str = ".",
+        path: str = "",
+        level: int = 0,
+        file_paths: list[str] = [],
+        IGNORE_DIRS: list[str] = [],
+        IGNORE_FILES: list[str] = [],
+    ) -> tuple[str, list[str]]:
+    """Build a tree representation of a directory and return a list of file paths under the root directory"""
+    tree_str = ""
+
+    if level == 0:
+        # add the base directory name to the tree string
+        tree_str += f"{os.path.basename(os.getcwd() if dir == '.' else dir)}/\n"
+
+    # NOTE: this currently includes files to be ignored in tree string -- these should maybe be excluded as well
+    # get all contents of the dir, ignoring dirs like build, target, etc. to save on token count for final tree string
+    # using fnmatch to allow for wildcard patterns in IGNORE_DIRS
+    items = [
+        item
+        for item in sorted(os.listdir(dir))
+        if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_DIRS)
+    ]
+
+    for i, item in enumerate(items):
+        item_path = os.path.join(dir, item)
+
+        # the last item in the list (contents of curr dir) has not more items printed below it
+        is_last_item = i == len(items) - 1
+        if is_last_item:
+            prefix = "└── " 
+        else:
+            prefix = "├── " 
+
+        # when printing contents nested in child dirs, we need to make sure to print the
+        # vertical bars to the left of these contents that connect the contents of the parent dir
+        if level > 0:
+            tree_str += "│   " * (level - 1)
+            tree_str += "│   "
+
+        # now add the item to the tree string and move to the next line for the next item
+        if os.path.isdir(item_path):
+            item += "/"
+        tree_str += prefix + item + "\n"
+
+        if os.path.isdir(item_path):
+            # follow the directory down to the next level of the tree
+            tree_str_child, file_paths = build_directory_tree(
+                item_path,
+                path=os.path.join(path, item),
+                level=level + 1,
+                file_paths=file_paths,
+                IGNORE_DIRS=IGNORE_DIRS,
+                IGNORE_FILES=IGNORE_FILES,
+            )
+            tree_str += tree_str_child
+        else:
+            # add file path to list if allowed file
+            if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_FILES):
+                file_paths.append(os.path.join(path, item))
+
+    return tree_str, file_paths
+
+
+def read_notebook(file: str) -> str:
+    """Read the contents of a Jupyter notebook file (.ipynb) and return a string representation of the cells"""
+    with open(file, "r") as f:
+        notebook = json.load(f)
+        cell_content = ["".join(cell["source"]) for cell in notebook["cells"]]
+        cell_types = [cell["cell_type"] for cell in notebook["cells"]]
+    
+    notebook_str = ""
+    for i, cell in enumerate(cell_content):
+        notebook_str += f"{'-'*10} Cell {i+1} ({cell_types[i]}) {'-'*10}\n"
+        notebook_str += cell + "\n\n"
+    return notebook_str
+    
+
+def build_prompt(
+        dir: str = ".", 
+        filters: list[str] = None, 
+        IGNORE_DIRS: list[str] = [], 
+        IGNORE_FILES: list[str] = []
+    ) -> str:
+    """Build a prompt for a directory, including a tree representation of the directory and the contents of each file in the directory that matches the filters"""
+    tree_str, file_paths = build_directory_tree(dir=dir, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+    prompt = f"<context>\n"
+    prompt += f"<directory_tree>\n{tree_str}</directory_tree>\n\n"
+
+    prompt += "<files>\n\n"
+    for file in file_paths:
+        # read only filtered files, if specified
+        if filters is None or any(file.endswith(ext) for ext in filters):
+            try:
+                if file.endswith(".ipynb"):
+                    file_content = read_notebook(file)
+                else:
+                    with open(os.path.join(dir, file), "r") as f:
+                        file_content = f.read()
+
+                # add file string to prompt
+                prompt += f"<file>\n"
+                prompt += f"<path>{file}</path>\n"
+                if not file_content.strip():
+                    file_content = "EMPTY FILE"
+                prompt += f"<content>\n{file_content}\n</content>\n"
+                prompt += f"</file>\n\n"
+                
+            except UnicodeDecodeError:
+                print(f"Unable to decode file content due to UnicodeDecodeError: {file}")
+            except FileNotFoundError:
+                print(f"File not found: {file}")
+
+    prompt += "</files>\n"
+    prompt += "</context>"
+    return prompt
+
+
+def load_config(config_path: str) -> dict:
+    try:
+        with open(config_path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise Exception(f"Config file not found: {config_path}")
+    
+
+def save_file(contents: str, outpath: str = ".", outfile: str = "out"):
+    path = os.path.join(outpath, f"{outfile}.txt")
+    with open(path, "w") as f:
+        f.write(contents)
+
+
+def parse_options():
+    parser = argparse.ArgumentParser(description="Generate a prompt for a directory")
+    parser.add_argument("--dir", type=str, default=".", help="Directory to generate prompt for")
+    parser.add_argument("--filters", type=str, nargs="+", help="File extensions to filter for")
+    parser.add_argument("--outpath", type=str, default=".", help="Output path for prompt file")
+    parser.add_argument("--outfile", type=str, help="Output file name for prompt file (default: <dir>_prompt)")
+    parser.add_argument("--ignore-dir", type=str, nargs="+", help="Additional directories to ignore: specify directory names (e.g., .git, __pycache__, etc.)")
+    parser.add_argument("--ignore-file", type=str, nargs="+", help="Additional file types to ignore: specify extensions with or without dot (e.g., py, ipynb, .c, etc.)")
+    parser.add_argument("--config", type=str, help="Path to the custom configuration file (default: config.json)")
+    args = parser.parse_args()
+
+    # set the outfile name
+    if args.outfile is None:
+        if args.dir == ".":
+            # replace "." with the actual base directory name
+            dir_name = os.path.basename(os.getcwd()) 
+        else:
+            dir_name = os.path.basename(args.dir)
+        args.outfile = f"{dir_name}_prompt"
+
+    # set the default config file path relative to the package root
+    if args.config is None:
+        # TODO: FIX THIS
+        # args.config = os.path.join(os.path.dirname(__file__), "..", "config.json")
+        # get the path to the config file relative to src package -- assumes in src -- change
+        args.config = pkg_resources.resource_filename(".", "config.json")
+        print(args.config)
+        print()
+    return args
+
+
+def main():
+    args = parse_options()
+
+    try:
+        config = load_config(args.config)
+    except Exception as e:
+        if args.config == os.path.join(os.path.dirname(__file__), "..", "config.json"):
+            raise Exception(f"Default config file not found: {args.config}") from e
+        else:
+            raise Exception(f"Custom config file not found: {args.config}") from e
+
+    IGNORE_DIRS = config["IGNORE_DIRS"]
+    IGNORE_FILES = config["IGNORE_FILES"]
+
+    # extend the default ignore lists with cli args
+    if args.ignore_dir:
+        IGNORE_DIRS.extend(args.ignore_dir)
+    if args.ignore_file:
+        IGNORE_FILES.extend(args.ignore_file)
+
+    prompt = build_prompt(dir=args.dir, filters=args.filters, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+
+    save_file(prompt, outpath=args.outpath, outfile=args.outfile)
+    
+    print(f"Prompt saved to {os.path.join(args.outpath, args.outfile)}.txt")
+
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+</content>
+</file>
+
+<file>
+<path>pyproject.toml</path>
+<content>
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dir2prompt_test"
+version = "1.0.0"
+license = {file = "LICENSE"}
+authors = [
+  { name="Max Kieffer", email="wkieffer@ufl.edu" },
+]
+description = "A tool to generate prompts from directory contents"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+keywords = [
+    "prompt engineering",
+    "large language model",
+    "directory structure",
+    "prompt generation",
+    "file tree visualization",
+    "directory to prompt",
+    "automation tools",
+    "developer utilities",
+    "code documentation",
+]
+
+[project.urls]
+Homepage = "https://github.com/mkieffer1107/dir2prompt"
+Issues = "https://github.com/mkieffer1107/dir2prompt/issues"
+
+[tool.setuptools]
+packages = ["src"]
+package-data = {"" = ["config.json"]}
+
+[project.scripts]
+d2p = "src.d2p:main"
+</content>
+</file>
+
+<file>
+<path>setup.py</path>
+<content>
+from setuptools import setup, find_packages
+
+setup(
+    name="dir2prompt",
+    version="1.0.0",
+    packages=find_packages(),
+    package_data={
+        "": ["config.json"],   
+    },
+    entry_points={
+        "console_scripts": [
+            "d2p=src.d2p:main"
+        ],
+    },
+    author="Max Kieffer",
+    author_email="wkieffer@ufl.edu",
+    description="A tool to generate prompts from directory contents",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/mkieffer1107/dir2prompt",
+    license="MIT",
+    keywords=[
+        "prompt engineering",
+        "large language model",
+        "directory structure",
+        "prompt generation",
+        "file tree visualization",
+        "directory to prompt",
+        "automation tools",
+        "developer utilities",
+        "code documentation",
+    ],
+    python_requires=">=3.6",
+    install_requires=[],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
+)
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/d2p.py</path>
+<content>
+import os
+import json
+import fnmatch
+import argparse
+import pkg_resources
+
+def build_directory_tree(
+        dir: str = ".",
+        path: str = "",
+        level: int = 0,
+        file_paths: list[str] = [],
+        IGNORE_DIRS: list[str] = [],
+        IGNORE_FILES: list[str] = [],
+    ) -> tuple[str, list[str]]:
+    """Build a tree representation of a directory and return a list of file paths under the root directory"""
+    tree_str = ""
+
+    if level == 0:
+        # add the base directory name to the tree string
+        tree_str += f"{os.path.basename(os.getcwd() if dir == '.' else dir)}/\n"
+
+    # NOTE: this currently includes files to be ignored in tree string -- these should maybe be excluded as well
+    # get all contents of the dir, ignoring dirs like build, target, etc. to save on token count for final tree string
+    # using fnmatch to allow for wildcard patterns in IGNORE_DIRS
+    items = [
+        item
+        for item in sorted(os.listdir(dir))
+        if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_DIRS)
+    ]
+
+    for i, item in enumerate(items):
+        item_path = os.path.join(dir, item)
+
+        # the last item in the list (contents of curr dir) has not more items printed below it
+        is_last_item = i == len(items) - 1
+        if is_last_item:
+            prefix = "└── " 
+        else:
+            prefix = "├── " 
+
+        # when printing contents nested in child dirs, we need to make sure to print the
+        # vertical bars to the left of these contents that connect the contents of the parent dir
+        if level > 0:
+            tree_str += "│   " * (level - 1)
+            tree_str += "│   "
+
+        # now add the item to the tree string and move to the next line for the next item
+        if os.path.isdir(item_path):
+            item += "/"
+        tree_str += prefix + item + "\n"
+
+        if os.path.isdir(item_path):
+            # follow the directory down to the next level of the tree
+            tree_str_child, file_paths = build_directory_tree(
+                item_path,
+                path=os.path.join(path, item),
+                level=level + 1,
+                file_paths=file_paths,
+                IGNORE_DIRS=IGNORE_DIRS,
+                IGNORE_FILES=IGNORE_FILES,
+            )
+            tree_str += tree_str_child
+        else:
+            # add file path to list if allowed file
+            if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_FILES):
+                file_paths.append(os.path.join(path, item))
+
+    return tree_str, file_paths
+
+
+def read_notebook(file: str) -> str:
+    """Read the contents of a Jupyter notebook file (.ipynb) and return a string representation of the cells"""
+    with open(file, "r") as f:
+        notebook = json.load(f)
+        cell_content = ["".join(cell["source"]) for cell in notebook["cells"]]
+        cell_types = [cell["cell_type"] for cell in notebook["cells"]]
+    
+    notebook_str = ""
+    for i, cell in enumerate(cell_content):
+        notebook_str += f"{'-'*10} Cell {i+1} ({cell_types[i]}) {'-'*10}\n"
+        notebook_str += cell + "\n\n"
+    return notebook_str
+    
+
+def build_prompt(
+        dir: str = ".", 
+        filters: list[str] = None, 
+        IGNORE_DIRS: list[str] = [], 
+        IGNORE_FILES: list[str] = []
+    ) -> str:
+    """Build a prompt for a directory, including a tree representation of the directory and the contents of each file in the directory that matches the filters"""
+    tree_str, file_paths = build_directory_tree(dir=dir, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+    prompt = f"<context>\n"
+    prompt += f"<directory_tree>\n{tree_str}</directory_tree>\n\n"
+
+    prompt += "<files>\n\n"
+    for file in file_paths:
+        # read only filtered files, if specified
+        if filters is None or any(file.endswith(ext) for ext in filters):
+            try:
+                if file.endswith(".ipynb"):
+                    file_content = read_notebook(file)
+                else:
+                    with open(os.path.join(dir, file), "r") as f:
+                        file_content = f.read()
+
+                # add file string to prompt
+                prompt += f"<file>\n"
+                prompt += f"<path>{file}</path>\n"
+                if not file_content.strip():
+                    file_content = "EMPTY FILE"
+                prompt += f"<content>\n{file_content}\n</content>\n"
+                prompt += f"</file>\n\n"
+                
+            except UnicodeDecodeError:
+                print(f"Unable to decode file content due to UnicodeDecodeError: {file}")
+            except FileNotFoundError:
+                print(f"File not found: {file}")
+
+    prompt += "</files>\n"
+    prompt += "</context>"
+    return prompt
+
+
+def load_config(config_path: str) -> dict:
+    try:
+        with open(config_path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise Exception(f"Config file not found: {config_path}")
+    
+
+def save_file(contents: str, outpath: str = ".", outfile: str = "out"):
+    path = os.path.join(outpath, f"{outfile}.txt")
+    with open(path, "w") as f:
+        f.write(contents)
+
+
+def parse_options():
+    parser = argparse.ArgumentParser(description="Generate a prompt for a directory")
+    parser.add_argument("--dir", type=str, default=".", help="Directory to generate prompt for")
+    parser.add_argument("--filters", type=str, nargs="+", help="File extensions to filter for")
+    parser.add_argument("--outpath", type=str, default=".", help="Output path for prompt file")
+    parser.add_argument("--outfile", type=str, help="Output file name for prompt file (default: <dir>_prompt)")
+    parser.add_argument("--ignore-dir", type=str, nargs="+", help="Additional directories to ignore: specify directory names (e.g., .git, __pycache__, etc.)")
+    parser.add_argument("--ignore-file", type=str, nargs="+", help="Additional file types to ignore: specify extensions with or without dot (e.g., py, ipynb, .c, etc.)")
+    parser.add_argument("--config", type=str, help="Path to the custom configuration file (default: config.json)")
+    args = parser.parse_args()
+
+    # set the outfile name
+    if args.outfile is None:
+        if args.dir == ".":
+            # replace "." with the actual base directory name
+            dir_name = os.path.basename(os.getcwd()) 
+        else:
+            dir_name = os.path.basename(args.dir)
+        args.outfile = f"{dir_name}_prompt"
+
+    # set the default config file path relative to the package root
+    if args.config is None:
+        # TODO: FIX THIS
+        # args.config = os.path.join(os.path.dirname(__file__), "..", "config.json")
+        # get the path to the config file relative to src package -- assumes in src -- change
+        # args.config = pkg_resources.resource_filename(".", "config.json")
+        args.config = pkg_resources.resource_filename(__name__, "../config.json")
+        print(args.config)
+        print()
+    return args
+
+
+def main():
+    args = parse_options()
+
+    try:
+        config = load_config(args.config)
+    except Exception as e:
+        if args.config == os.path.join(os.path.dirname(__file__), "..", "config.json"):
+            raise Exception(f"Default config file not found: {args.config}") from e
+        else:
+            raise Exception(f"Custom config file not found: {args.config}") from e
+
+    IGNORE_DIRS = config["IGNORE_DIRS"]
+    IGNORE_FILES = config["IGNORE_FILES"]
+
+    # extend the default ignore lists with cli args
+    if args.ignore_dir:
+        IGNORE_DIRS.extend(args.ignore_dir)
+    if args.ignore_file:
+        IGNORE_FILES.extend(args.ignore_file)
+
+    prompt = build_prompt(dir=args.dir, filters=args.filters, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+
+    save_file(prompt, outpath=args.outpath, outfile=args.outfile)
+    
+    print(f"Prompt saved to {os.path.join(args.outpath, args.outfile)}.txt")
+
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+</content>
+</file>
+
+<file>
+<path>pyproject.toml</path>
+<content>
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dir2prompt_test"
+version = "1.0.0"
+license = {file = "LICENSE"}
+authors = [
+  { name="Max Kieffer", email="wkieffer@ufl.edu" },
+]
+description = "A tool to generate prompts from directory contents"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+keywords = [
+    "prompt engineering",
+    "large language model",
+    "directory structure",
+    "prompt generation",
+    "file tree visualization",
+    "directory to prompt",
+    "automation tools",
+    "developer utilities",
+    "code documentation",
+]
+
+[project.urls]
+Homepage = "https://github.com/mkieffer1107/dir2prompt"
+Issues = "https://github.com/mkieffer1107/dir2prompt/issues"
+
+[tool.setuptools]
+packages = ["src"]
+package-data = {"src" = ["config.json"]}
+
+[project.scripts]
+d2p = "src.d2p:main"
+</content>
+</file>
+
+<file>
+<path>setup.py</path>
+<content>
+from setuptools import setup, find_packages
+
+setup(
+    name="dir2prompt",
+    version="1.0.0",
+    packages=find_packages(),
+    package_data={
+        "src": ["config.json"],   
+    },
+    entry_points={
+        "console_scripts": [
+            "d2p=src.d2p:main"
+        ],
+    },
+    author="Max Kieffer",
+    author_email="wkieffer@ufl.edu",
+    description="A tool to generate prompts from directory contents",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/mkieffer1107/dir2prompt",
+    license="MIT",
+    keywords=[
+        "prompt engineering",
+        "large language model",
+        "directory structure",
+        "prompt generation",
+        "file tree visualization",
+        "directory to prompt",
+        "automation tools",
+        "developer utilities",
+        "code documentation",
+    ],
+    python_requires=">=3.6",
+    install_requires=[],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
+)
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/config.json</path>
+<content>
+{
+    "IGNORE_DIRS": [
+        "__pycache__",
+        ".git",
+        ".idea",
+        "node_modules",
+        "target",
+        "build",
+        "dist",
+        "out",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        ".pytest_cache",
+        ".cache",
+        ".mypy_cache",
+        ".hypothesis",
+        ".ipynb_checkpoints",
+        "*.egg-info"
+    ],
+    "IGNORE_FILES": [
+        ".DS_Store",
+        ".gitignore",
+        "Thumbs.db",
+        "desktop.ini",
+        ".pytest_cache",
+        ".coverage",
+        ".coveragerc",
+        "coverage.xml",
+        "nosetests.xml",
+        "junit.xml",
+        "pytest.xml",
+        "TEST-*.xml",
+        "*.log",
+        "*.out",
+        "*.bak",
+        "*.swp",
+        "*.swo",
+        "*~",
+        "*.pyc",
+        "*.pyo",
+        "*.pyd",
+        "*.class",
+        "*.dll",
+        "*.exe",
+        "*.o",
+        "*.obj",
+        "*.so",
+        "*.a",
+        "*.lib",
+        "*.pdb"
+    ]
+}
+</content>
+</file>
+
+<file>
+<path>src/d2p.py</path>
+<content>
+import os
+import json
+import fnmatch
+import argparse
+
+from importlib.resources import files
+
+def build_directory_tree(
+        dir: str = ".",
+        path: str = "",
+        level: int = 0,
+        file_paths: list[str] = [],
+        IGNORE_DIRS: list[str] = [],
+        IGNORE_FILES: list[str] = [],
+    ) -> tuple[str, list[str]]:
+    """Build a tree representation of a directory and return a list of file paths under the root directory"""
+    tree_str = ""
+
+    if level == 0:
+        # add the base directory name to the tree string
+        tree_str += f"{os.path.basename(os.getcwd() if dir == '.' else dir)}/\n"
+
+    # NOTE: this currently includes files to be ignored in tree string -- these should maybe be excluded as well
+    # get all contents of the dir, ignoring dirs like build, target, etc. to save on token count for final tree string
+    # using fnmatch to allow for wildcard patterns in IGNORE_DIRS
+    items = [
+        item
+        for item in sorted(os.listdir(dir))
+        if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_DIRS)
+    ]
+
+    for i, item in enumerate(items):
+        item_path = os.path.join(dir, item)
+
+        # the last item in the list (contents of curr dir) has not more items printed below it
+        is_last_item = i == len(items) - 1
+        if is_last_item:
+            prefix = "└── " 
+        else:
+            prefix = "├── " 
+
+        # when printing contents nested in child dirs, we need to make sure to print the
+        # vertical bars to the left of these contents that connect the contents of the parent dir
+        if level > 0:
+            tree_str += "│   " * (level - 1)
+            tree_str += "│   "
+
+        # now add the item to the tree string and move to the next line for the next item
+        if os.path.isdir(item_path):
+            item += "/"
+        tree_str += prefix + item + "\n"
+
+        if os.path.isdir(item_path):
+            # follow the directory down to the next level of the tree
+            tree_str_child, file_paths = build_directory_tree(
+                item_path,
+                path=os.path.join(path, item),
+                level=level + 1,
+                file_paths=file_paths,
+                IGNORE_DIRS=IGNORE_DIRS,
+                IGNORE_FILES=IGNORE_FILES,
+            )
+            tree_str += tree_str_child
+        else:
+            # add file path to list if allowed file
+            if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_FILES):
+                file_paths.append(os.path.join(path, item))
+
+    return tree_str, file_paths
+
+
+def read_notebook(file: str) -> str:
+    """Read the contents of a Jupyter notebook file (.ipynb) and return a string representation of the cells"""
+    with open(file, "r") as f:
+        notebook = json.load(f)
+        cell_content = ["".join(cell["source"]) for cell in notebook["cells"]]
+        cell_types = [cell["cell_type"] for cell in notebook["cells"]]
+    
+    notebook_str = ""
+    for i, cell in enumerate(cell_content):
+        notebook_str += f"{'-'*10} Cell {i+1} ({cell_types[i]}) {'-'*10}\n"
+        notebook_str += cell + "\n\n"
+    return notebook_str
+    
+
+def build_prompt(
+        dir: str = ".", 
+        filters: list[str] = None, 
+        IGNORE_DIRS: list[str] = [], 
+        IGNORE_FILES: list[str] = []
+    ) -> str:
+    """Build a prompt for a directory, including a tree representation of the directory and the contents of each file in the directory that matches the filters"""
+    tree_str, file_paths = build_directory_tree(dir=dir, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+    prompt = f"<context>\n"
+    prompt += f"<directory_tree>\n{tree_str}</directory_tree>\n\n"
+
+    prompt += "<files>\n\n"
+    for file in file_paths:
+        # read only filtered files, if specified
+        if filters is None or any(file.endswith(ext) for ext in filters):
+            try:
+                if file.endswith(".ipynb"):
+                    file_content = read_notebook(file)
+                else:
+                    with open(os.path.join(dir, file), "r") as f:
+                        file_content = f.read()
+
+                # add file string to prompt
+                prompt += f"<file>\n"
+                prompt += f"<path>{file}</path>\n"
+                if not file_content.strip():
+                    file_content = "EMPTY FILE"
+                prompt += f"<content>\n{file_content}\n</content>\n"
+                prompt += f"</file>\n\n"
+                
+            except UnicodeDecodeError:
+                print(f"Unable to decode file content due to UnicodeDecodeError: {file}")
+            except FileNotFoundError:
+                print(f"File not found: {file}")
+
+    prompt += "</files>\n"
+    prompt += "</context>"
+    return prompt
+
+
+def load_config(config_path: str) -> dict:
+    try:
+        with open(config_path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise Exception(f"Config file not found: {config_path}")
+    
+
+def save_file(contents: str, outpath: str = ".", outfile: str = "out"):
+    path = os.path.join(outpath, f"{outfile}.txt")
+    with open(path, "w") as f:
+        f.write(contents)
+
+
+def parse_options():
+    parser = argparse.ArgumentParser(description="Generate a prompt for a directory")
+    parser.add_argument("--dir", type=str, default=".", help="Directory to generate prompt for")
+    parser.add_argument("--filters", type=str, nargs="+", help="File extensions to filter for")
+    parser.add_argument("--outpath", type=str, default=".", help="Output path for prompt file")
+    parser.add_argument("--outfile", type=str, help="Output file name for prompt file (default: <dir>_prompt)")
+    parser.add_argument("--ignore-dir", type=str, nargs="+", help="Additional directories to ignore: specify directory names (e.g., .git, __pycache__, etc.)")
+    parser.add_argument("--ignore-file", type=str, nargs="+", help="Additional file types to ignore: specify extensions with or without dot (e.g., py, ipynb, .c, etc.)")
+    parser.add_argument("--config", type=str, help="Path to the custom configuration file (default: config.json)")
+    args = parser.parse_args()
+
+    # set the outfile name
+    if args.outfile is None:
+        if args.dir == ".":
+            # replace "." with the actual base directory name
+            dir_name = os.path.basename(os.getcwd()) 
+        else:
+            dir_name = os.path.basename(args.dir)
+        args.outfile = f"{dir_name}_prompt"
+
+    # set the default config file path relative to the package root
+    if args.config is None:
+        # TODO: FIX THIS
+        # args.config = os.path.join(os.path.dirname(__file__), "..", "config.json")
+        # get the path to the config file relative to src package -- assumes in src -- change
+        # args.config = pkg_resources.resource_filename(".", "config.json")
+        # args.config = pkg_resources.resource_filename(__name__, "../config.json")
+        args.config = str(files("src").joinpath("config.json"))
+        print(args.config)
+        print()
+    return args
+
+
+def main():
+    args = parse_options()
+
+    try:
+        config = load_config(args.config)
+    except Exception as e:
+        if args.config == os.path.join(os.path.dirname(__file__), "..", "config.json"):
+            raise Exception(f"Default config file not found: {args.config}") from e
+        else:
+            raise Exception(f"Custom config file not found: {args.config}") from e
+
+    IGNORE_DIRS = config["IGNORE_DIRS"]
+    IGNORE_FILES = config["IGNORE_FILES"]
+
+    # extend the default ignore lists with cli args
+    if args.ignore_dir:
+        IGNORE_DIRS.extend(args.ignore_dir)
+    if args.ignore_file:
+        IGNORE_FILES.extend(args.ignore_file)
+
+    prompt = build_prompt(dir=args.dir, filters=args.filters, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+
+    save_file(prompt, outpath=args.outpath, outfile=args.outfile)
+    
+    print(f"Prompt saved to {os.path.join(args.outpath, args.outfile)}.txt")
+
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+</content>
+</file>
+
+<file>
+<path>pyproject.toml</path>
+<content>
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dir2prompt_test"
+version = "1.0.0"
+license = {file = "LICENSE"}
+authors = [
+  { name="Max Kieffer", email="wkieffer@ufl.edu" },
+]
+description = "A tool to generate prompts from directory contents"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+keywords = [
+    "prompt engineering",
+    "large language model",
+    "directory structure",
+    "prompt generation",
+    "file tree visualization",
+    "directory to prompt",
+    "automation tools",
+    "developer utilities",
+    "code documentation",
+]
+
+[project.urls]
+Homepage = "https://github.com/mkieffer1107/dir2prompt"
+Issues = "https://github.com/mkieffer1107/dir2prompt/issues"
+
+[tool.setuptools]
+packages = ["src"]
+package-data = {"src" = ["config.json"]}
+
+[project.scripts]
+d2p = "src.d2p:main"
+</content>
+</file>
+
+<file>
+<path>setup.py</path>
+<content>
+from setuptools import setup, find_packages
+
+setup(
+    name="dir2prompt",
+    version="1.0.0",
+    packages=find_packages(),
+    package_data={
+        "src": ["config.json"],   
+    },
+    entry_points={
+        "console_scripts": [
+            "d2p=src.d2p:main"
+        ],
+    },
+    author="Max Kieffer",
+    author_email="wkieffer@ufl.edu",
+    description="A tool to generate prompts from directory contents",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/mkieffer1107/dir2prompt",
+    license="MIT",
+    keywords=[
+        "prompt engineering",
+        "large language model",
+        "directory structure",
+        "prompt generation",
+        "file tree visualization",
+        "directory to prompt",
+        "automation tools",
+        "developer utilities",
+        "code documentation",
+    ],
+    python_requires=">=3.6",
+    install_requires=[],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
+)
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/config.json</path>
+<content>
+{
+    "IGNORE_DIRS": [
+        "__pycache__",
+        ".git",
+        ".idea",
+        "node_modules",
+        "target",
+        "build",
+        "dist",
+        "out",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        ".pytest_cache",
+        ".cache",
+        ".mypy_cache",
+        ".hypothesis",
+        ".ipynb_checkpoints",
+        "*.egg-info"
+    ],
+    "IGNORE_FILES": [
+        ".DS_Store",
+        ".gitignore",
+        "Thumbs.db",
+        "desktop.ini",
+        ".pytest_cache",
+        ".coverage",
+        ".coveragerc",
+        "coverage.xml",
+        "nosetests.xml",
+        "junit.xml",
+        "pytest.xml",
+        "TEST-*.xml",
+        "*.log",
+        "*.out",
+        "*.bak",
+        "*.swp",
+        "*.swo",
+        "*~",
+        "*.pyc",
+        "*.pyo",
+        "*.pyd",
+        "*.class",
+        "*.dll",
+        "*.exe",
+        "*.o",
+        "*.obj",
+        "*.so",
+        "*.a",
+        "*.lib",
+        "*.pdb"
+    ]
+}
+</content>
+</file>
+
+<file>
+<path>src/d2p.py</path>
+<content>
+import os
+import json
+import fnmatch
+import argparse
+
+from importlib.resources import files
+
+def build_directory_tree(
+        dir: str = ".",
+        path: str = "",
+        level: int = 0,
+        file_paths: list[str] = [],
+        IGNORE_DIRS: list[str] = [],
+        IGNORE_FILES: list[str] = [],
+    ) -> tuple[str, list[str]]:
+    """Build a tree representation of a directory and return a list of file paths under the root directory"""
+    tree_str = ""
+
+    if level == 0:
+        # add the base directory name to the tree string
+        tree_str += f"{os.path.basename(os.getcwd() if dir == '.' else dir)}/\n"
+
+    # NOTE: this currently includes files to be ignored in tree string -- these should maybe be excluded as well
+    # get all contents of the dir, ignoring dirs like build, target, etc. to save on token count for final tree string
+    # using fnmatch to allow for wildcard patterns in IGNORE_DIRS
+    items = [
+        item
+        for item in sorted(os.listdir(dir))
+        if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_DIRS)
+    ]
+
+    for i, item in enumerate(items):
+        item_path = os.path.join(dir, item)
+
+        # the last item in the list (contents of curr dir) has not more items printed below it
+        is_last_item = i == len(items) - 1
+        if is_last_item:
+            prefix = "└── " 
+        else:
+            prefix = "├── " 
+
+        # when printing contents nested in child dirs, we need to make sure to print the
+        # vertical bars to the left of these contents that connect the contents of the parent dir
+        if level > 0:
+            tree_str += "│   " * (level - 1)
+            tree_str += "│   "
+
+        # now add the item to the tree string and move to the next line for the next item
+        if os.path.isdir(item_path):
+            item += "/"
+        tree_str += prefix + item + "\n"
+
+        if os.path.isdir(item_path):
+            # follow the directory down to the next level of the tree
+            tree_str_child, file_paths = build_directory_tree(
+                item_path,
+                path=os.path.join(path, item),
+                level=level + 1,
+                file_paths=file_paths,
+                IGNORE_DIRS=IGNORE_DIRS,
+                IGNORE_FILES=IGNORE_FILES,
+            )
+            tree_str += tree_str_child
+        else:
+            # add file path to list if allowed file
+            if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_FILES):
+                file_paths.append(os.path.join(path, item))
+
+    return tree_str, file_paths
+
+
+def read_notebook(file: str) -> str:
+    """Read the contents of a Jupyter notebook file (.ipynb) and return a string representation of the cells"""
+    with open(file, "r") as f:
+        notebook = json.load(f)
+        cell_content = ["".join(cell["source"]) for cell in notebook["cells"]]
+        cell_types = [cell["cell_type"] for cell in notebook["cells"]]
+    
+    notebook_str = ""
+    for i, cell in enumerate(cell_content):
+        notebook_str += f"{'-'*10} Cell {i+1} ({cell_types[i]}) {'-'*10}\n"
+        notebook_str += cell + "\n\n"
+    return notebook_str
+    
+
+def build_prompt(
+        dir: str = ".", 
+        filters: list[str] = None, 
+        IGNORE_DIRS: list[str] = [], 
+        IGNORE_FILES: list[str] = []
+    ) -> str:
+    """Build a prompt for a directory, including a tree representation of the directory and the contents of each file in the directory that matches the filters"""
+    tree_str, file_paths = build_directory_tree(dir=dir, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+    prompt = f"<context>\n"
+    prompt += f"<directory_tree>\n{tree_str}</directory_tree>\n\n"
+
+    prompt += "<files>\n\n"
+    for file in file_paths:
+        # read only filtered files, if specified
+        if filters is None or any(file.endswith(ext) for ext in filters):
+            try:
+                if file.endswith(".ipynb"):
+                    file_content = read_notebook(file)
+                else:
+                    with open(os.path.join(dir, file), "r") as f:
+                        file_content = f.read()
+
+                # add file string to prompt
+                prompt += f"<file>\n"
+                prompt += f"<path>{file}</path>\n"
+                if not file_content.strip():
+                    file_content = "EMPTY FILE"
+                prompt += f"<content>\n{file_content}\n</content>\n"
+                prompt += f"</file>\n\n"
+                
+            except UnicodeDecodeError:
+                print(f"Unable to decode file content due to UnicodeDecodeError: {file}")
+            except FileNotFoundError:
+                print(f"File not found: {file}")
+
+    prompt += "</files>\n"
+    prompt += "</context>"
+    return prompt
+
+
+def load_config(config_path: str) -> dict:
+    try:
+        with open(config_path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise Exception(f"Config file not found: {config_path}")
+    
+
+def save_file(contents: str, outpath: str = ".", outfile: str = "out"):
+    path = os.path.join(outpath, f"{outfile}.txt")
+    with open(path, "w") as f:
+        f.write(contents)
+
+
+def parse_options():
+    parser = argparse.ArgumentParser(description="Generate a prompt for a directory")
+    parser.add_argument("--dir", type=str, default=".", help="Directory to generate prompt for")
+    parser.add_argument("--filters", type=str, nargs="+", help="File extensions to filter for")
+    parser.add_argument("--outpath", type=str, default=".", help="Output path for prompt file")
+    parser.add_argument("--outfile", type=str, help="Output file name for prompt file (default: <dir>_prompt)")
+    parser.add_argument("--ignore-dir", type=str, nargs="+", help="Additional directories to ignore: specify directory names (e.g., .git, __pycache__, etc.)")
+    parser.add_argument("--ignore-file", type=str, nargs="+", help="Additional file types to ignore: specify extensions with or without dot (e.g., py, ipynb, .c, etc.)")
+    parser.add_argument("--config", type=str, help="Path to the custom configuration file (default: config.json)")
+    args = parser.parse_args()
+
+    # set the outfile name
+    if args.outfile is None:
+        if args.dir == ".":
+            # replace "." with the actual base directory name
+            dir_name = os.path.basename(os.getcwd()) 
+        else:
+            dir_name = os.path.basename(args.dir)
+        args.outfile = f"{dir_name}_prompt"
+
+    # set the default config file path relative to the package root
+    if args.config is None:
+        # TODO: FIX THIS
+        # args.config = os.path.join(os.path.dirname(__file__), "..", "config.json")
+        # get the path to the config file relative to src package -- assumes in src -- change
+        # args.config = pkg_resources.resource_filename(".", "config.json")
+        # args.config = pkg_resources.resource_filename(__name__, "../config.json")
+        args.config = str(files("src").joinpath("config.json"))
+        print(args.config)
+        print()
+    return args
+
+
+def main():
+    args = parse_options()
+
+    try:
+        config = load_config(args.config)
+    except Exception as e:
+        if args.config == os.path.join(os.path.dirname(__file__), "..", "config.json"):
+            raise Exception(f"Default config file not found: {args.config}") from e
+        else:
+            raise Exception(f"Custom config file not found: {args.config}") from e
+
+    IGNORE_DIRS = config["IGNORE_DIRS"]
+    IGNORE_FILES = config["IGNORE_FILES"]
+
+    # extend the default ignore lists with cli args
+    if args.ignore_dir:
+        IGNORE_DIRS.extend(args.ignore_dir)
+    if args.ignore_file:
+        IGNORE_FILES.extend(args.ignore_file)
+
+    prompt = build_prompt(dir=args.dir, filters=args.filters, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+
+    save_file(prompt, outpath=args.outpath, outfile=args.outfile)
+    
+    print(f"Prompt saved to {os.path.join(args.outpath, args.outfile)}.txt")
+
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+</content>
+</file>
+
+<file>
+<path>pyproject.toml</path>
+<content>
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dir2prompt_test"
+version = "1.0.0"
+license = {file = "LICENSE"}
+authors = [
+  { name="Max Kieffer", email="wkieffer@ufl.edu" },
+]
+description = "A tool to generate prompts from directory contents"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+keywords = [
+    "prompt engineering",
+    "large language model",
+    "directory structure",
+    "prompt generation",
+    "file tree visualization",
+    "directory to prompt",
+    "automation tools",
+    "developer utilities",
+    "code documentation",
+]
+
+[project.urls]
+Homepage = "https://github.com/mkieffer1107/dir2prompt"
+Issues = "https://github.com/mkieffer1107/dir2prompt/issues"
+
+[tool.setuptools]
+packages = ["src"]
+package-data = {"src" = ["config.json"]}
+
+[project.scripts]
+d2p = "src.d2p:main"
+</content>
+</file>
+
+<file>
+<path>setup.py</path>
+<content>
+from setuptools import setup, find_packages
+
+setup(
+    name="dir2prompt",
+    version="1.0.0",
+    packages=find_packages(),
+    package_data={
+        "src": ["config.json"],   
+    },
+    entry_points={
+        "console_scripts": [
+            "d2p=src.d2p:main"
+        ],
+    },
+    author="Max Kieffer",
+    author_email="wkieffer@ufl.edu",
+    description="A tool to generate prompts from directory contents",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/mkieffer1107/dir2prompt",
+    license="MIT",
+    keywords=[
+        "prompt engineering",
+        "large language model",
+        "directory structure",
+        "prompt generation",
+        "file tree visualization",
+        "directory to prompt",
+        "automation tools",
+        "developer utilities",
+        "code documentation",
+    ],
+    python_requires=">=3.6",
+    install_requires=[],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
+)
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/config.json</path>
+<content>
+{
+    "IGNORE_DIRS": [
+        "__pycache__",
+        ".git",
+        ".idea",
+        "node_modules",
+        "target",
+        "build",
+        "dist",
+        "out",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        ".pytest_cache",
+        ".cache",
+        ".mypy_cache",
+        ".hypothesis",
+        ".ipynb_checkpoints",
+        "*.egg-info"
+    ],
+    "IGNORE_FILES": [
+        ".DS_Store",
+        ".gitignore",
+        "Thumbs.db",
+        "desktop.ini",
+        ".pytest_cache",
+        ".coverage",
+        ".coveragerc",
+        "coverage.xml",
+        "nosetests.xml",
+        "junit.xml",
+        "pytest.xml",
+        "TEST-*.xml",
+        "*.log",
+        "*.out",
+        "*.bak",
+        "*.swp",
+        "*.swo",
+        "*~",
+        "*.pyc",
+        "*.pyo",
+        "*.pyd",
+        "*.class",
+        "*.dll",
+        "*.exe",
+        "*.o",
+        "*.obj",
+        "*.so",
+        "*.a",
+        "*.lib",
+        "*.pdb"
+    ]
+}
+</content>
+</file>
+
+<file>
+<path>src/d2p.py</path>
+<content>
+import os
+import json
+import fnmatch
+import argparse
+
+from importlib.resources import files
+
+def build_directory_tree(
+        dir: str = ".",
+        path: str = "",
+        level: int = 0,
+        file_paths: list[str] = [],
+        IGNORE_DIRS: list[str] = [],
+        IGNORE_FILES: list[str] = [],
+    ) -> tuple[str, list[str]]:
+    """Build a tree representation of a directory and return a list of file paths under the root directory"""
+    tree_str = ""
+
+    if level == 0:
+        # add the base directory name to the tree string
+        tree_str += f"{os.path.basename(os.getcwd() if dir == '.' else dir)}/\n"
+
+    # NOTE: this currently includes files to be ignored in tree string -- these should maybe be excluded as well
+    # get all contents of the dir, ignoring dirs like build, target, etc. to save on token count for final tree string
+    # using fnmatch to allow for wildcard patterns in IGNORE_DIRS
+    items = [
+        item
+        for item in sorted(os.listdir(dir))
+        if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_DIRS)
+    ]
+
+    for i, item in enumerate(items):
+        item_path = os.path.join(dir, item)
+
+        # the last item in the list (contents of curr dir) has not more items printed below it
+        is_last_item = i == len(items) - 1
+        if is_last_item:
+            prefix = "└── " 
+        else:
+            prefix = "├── " 
+
+        # when printing contents nested in child dirs, we need to make sure to print the
+        # vertical bars to the left of these contents that connect the contents of the parent dir
+        if level > 0:
+            tree_str += "│   " * (level - 1)
+            tree_str += "│   "
+
+        # now add the item to the tree string and move to the next line for the next item
+        if os.path.isdir(item_path):
+            item += "/"
+        tree_str += prefix + item + "\n"
+
+        if os.path.isdir(item_path):
+            # follow the directory down to the next level of the tree
+            tree_str_child, file_paths = build_directory_tree(
+                item_path,
+                path=os.path.join(path, item),
+                level=level + 1,
+                file_paths=file_paths,
+                IGNORE_DIRS=IGNORE_DIRS,
+                IGNORE_FILES=IGNORE_FILES,
+            )
+            tree_str += tree_str_child
+        else:
+            # add file path to list if allowed file
+            if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_FILES):
+                file_paths.append(os.path.join(path, item))
+
+    return tree_str, file_paths
+
+
+def read_notebook(file: str) -> str:
+    """Read the contents of a Jupyter notebook file (.ipynb) and return a string representation of the cells"""
+    with open(file, "r") as f:
+        notebook = json.load(f)
+        cell_content = ["".join(cell["source"]) for cell in notebook["cells"]]
+        cell_types = [cell["cell_type"] for cell in notebook["cells"]]
+    
+    notebook_str = ""
+    for i, cell in enumerate(cell_content):
+        notebook_str += f"{'-'*10} Cell {i+1} ({cell_types[i]}) {'-'*10}\n"
+        notebook_str += cell + "\n\n"
+    return notebook_str
+    
+
+def build_prompt(
+        dir: str = ".", 
+        filters: list[str] = None, 
+        IGNORE_DIRS: list[str] = [], 
+        IGNORE_FILES: list[str] = []
+    ) -> str:
+    """Build a prompt for a directory, including a tree representation of the directory and the contents of each file in the directory that matches the filters"""
+    tree_str, file_paths = build_directory_tree(dir=dir, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+    prompt = f"<context>\n"
+    prompt += f"<directory_tree>\n{tree_str}</directory_tree>\n\n"
+
+    prompt += "<files>\n\n"
+    for file in file_paths:
+        # read only filtered files, if specified
+        if filters is None or any(file.endswith(ext) for ext in filters):
+            try:
+                if file.endswith(".ipynb"):
+                    file_content = read_notebook(file)
+                else:
+                    with open(os.path.join(dir, file), "r") as f:
+                        file_content = f.read()
+
+                # add file string to prompt
+                prompt += f"<file>\n"
+                prompt += f"<path>{file}</path>\n"
+                if not file_content.strip():
+                    file_content = "EMPTY FILE"
+                prompt += f"<content>\n{file_content}\n</content>\n"
+                prompt += f"</file>\n\n"
+                
+            except UnicodeDecodeError:
+                print(f"Unable to decode file content due to UnicodeDecodeError: {file}")
+            except FileNotFoundError:
+                print(f"File not found: {file}")
+
+    prompt += "</files>\n"
+    prompt += "</context>"
+    return prompt
+
+
+def load_config(config_path: str) -> dict:
+    try:
+        with open(config_path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise Exception(f"Config file not found: {config_path}")
+    
+
+def save_file(contents: str, outpath: str = ".", outfile: str = "out"):
+    path = os.path.join(outpath, f"{outfile}.txt")
+    with open(path, "w") as f:
+        f.write(contents)
+
+
+def parse_options():
+    parser = argparse.ArgumentParser(description="Generate a prompt for a directory")
+    parser.add_argument("--dir", type=str, default=".", help="Directory to generate prompt for")
+    parser.add_argument("--filters", type=str, nargs="+", help="File extensions to filter for")
+    parser.add_argument("--outpath", type=str, default=".", help="Output path for prompt file")
+    parser.add_argument("--outfile", type=str, help="Output file name for prompt file (default: <dir>_prompt)")
+    parser.add_argument("--ignore-dir", type=str, nargs="+", help="Additional directories to ignore: specify directory names (e.g., .git, __pycache__, etc.)")
+    parser.add_argument("--ignore-file", type=str, nargs="+", help="Additional file types to ignore: specify extensions with or without dot (e.g., py, ipynb, .c, etc.)")
+    parser.add_argument("--config", type=str, help="Path to the custom configuration file (default: config.json)")
+    args = parser.parse_args()
+
+    # set the outfile name
+    if args.outfile is None:
+        if args.dir == ".":
+            # replace "." with the actual base directory name
+            dir_name = os.path.basename(os.getcwd()) 
+        else:
+            dir_name = os.path.basename(args.dir)
+        args.outfile = f"{dir_name}_prompt"
+
+    # set the default config file path relative to the package root
+    if args.config is None:
+        # TODO: FIX THIS
+        # args.config = os.path.join(os.path.dirname(__file__), "..", "config.json")
+        # get the path to the config file relative to src package -- assumes in src -- change
+        # args.config = pkg_resources.resource_filename(".", "config.json")
+        # args.config = pkg_resources.resource_filename(__name__, "../config.json")
+        args.config = str(files("src").joinpath("config.json"))
+        print(args.config)
+        print()
+    return args
+
+
+def main():
+    args = parse_options()
+
+    try:
+        config = load_config(args.config)
+    except Exception as e:
+        if args.config == os.path.join(os.path.dirname(__file__), "..", "config.json"):
+            raise Exception(f"Default config file not found: {args.config}") from e
+        else:
+            raise Exception(f"Custom config file not found: {args.config}") from e
+
+    IGNORE_DIRS = config["IGNORE_DIRS"]
+    IGNORE_FILES = config["IGNORE_FILES"]
+
+    # extend the default ignore lists with cli args
+    if args.ignore_dir:
+        IGNORE_DIRS.extend(args.ignore_dir)
+    if args.ignore_file:
+        IGNORE_FILES.extend(args.ignore_file)
+
+    prompt = build_prompt(dir=args.dir, filters=args.filters, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+
+    save_file(prompt, outpath=args.outpath, outfile=args.outfile)
+    
+    print(f"Prompt saved to {os.path.join(args.outpath, args.outfile)}.txt")
+
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>
+</content>
+</file>
+
+<file>
+<path>pyproject.toml</path>
+<content>
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dir2prompt_test"
+version = "1.0.0"
+license = {file = "LICENSE"}
+authors = [
+  { name="Max Kieffer", email="wkieffer@ufl.edu" },
+]
+description = "A tool to generate prompts from directory contents"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+keywords = [
+    "prompt engineering",
+    "large language model",
+    "directory structure",
+    "prompt generation",
+    "file tree visualization",
+    "directory to prompt",
+    "automation tools",
+    "developer utilities",
+    "code documentation",
+]
+
+[project.urls]
+Homepage = "https://github.com/mkieffer1107/dir2prompt"
+Issues = "https://github.com/mkieffer1107/dir2prompt/issues"
+
+[tool.setuptools]
+packages = ["src"]
+package-data = {"src" = ["config.json"]}
+
+[project.scripts]
+d2p = "src.d2p:main"
+</content>
+</file>
+
+<file>
+<path>setup.py</path>
+<content>
+from setuptools import setup, find_packages
+
+setup(
+    name="dir2prompt",
+    version="1.0.0",
+    packages=find_packages(),
+    package_data={
+        "src": ["config.json"],   
+    },
+    entry_points={
+        "console_scripts": [
+            "d2p=src.d2p:main"
+        ],
+    },
+    author="Max Kieffer",
+    author_email="wkieffer@ufl.edu",
+    description="A tool to generate prompts from directory contents",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/mkieffer1107/dir2prompt",
+    license="MIT",
+    keywords=[
+        "prompt engineering",
+        "large language model",
+        "directory structure",
+        "prompt generation",
+        "file tree visualization",
+        "directory to prompt",
+        "automation tools",
+        "developer utilities",
+        "code documentation",
+    ],
+    python_requires=">=3.6",
+    install_requires=[],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
+)
+</content>
+</file>
+
+<file>
+<path>src/__init__.py</path>
+<content>
+EMPTY FILE
+</content>
+</file>
+
+<file>
+<path>src/config.json</path>
+<content>
+{
+    "IGNORE_DIRS": [
+        "__pycache__",
+        ".git",
+        ".idea",
+        "node_modules",
+        "target",
+        "build",
+        "dist",
+        "out",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        ".pytest_cache",
+        ".cache",
+        ".mypy_cache",
+        ".hypothesis",
+        ".ipynb_checkpoints",
+        "*.egg-info"
+    ],
+    "IGNORE_FILES": [
+        ".DS_Store",
+        ".gitignore",
+        "Thumbs.db",
+        "desktop.ini",
+        ".pytest_cache",
+        ".coverage",
+        ".coveragerc",
+        "coverage.xml",
+        "nosetests.xml",
+        "junit.xml",
+        "pytest.xml",
+        "TEST-*.xml",
+        "*.log",
+        "*.out",
+        "*.bak",
+        "*.swp",
+        "*.swo",
+        "*~",
+        "*.pyc",
+        "*.pyo",
+        "*.pyd",
+        "*.class",
+        "*.dll",
+        "*.exe",
+        "*.o",
+        "*.obj",
+        "*.so",
+        "*.a",
+        "*.lib",
+        "*.pdb"
+    ]
+}
+</content>
+</file>
+
+<file>
+<path>src/d2p.py</path>
+<content>
+import os
+import json
+import fnmatch
+import argparse
+
+from importlib.resources import files
+
+def build_directory_tree(
+        dir: str = ".",
+        path: str = "",
+        level: int = 0,
+        file_paths: list[str] = [],
+        IGNORE_DIRS: list[str] = [],
+        IGNORE_FILES: list[str] = [],
+    ) -> tuple[str, list[str]]:
+    """Build a tree representation of a directory and return a list of file paths under the root directory"""
+    tree_str = ""
+
+    if level == 0:
+        # add the base directory name to the tree string
+        tree_str += f"{os.path.basename(os.getcwd() if dir == '.' else dir)}/\n"
+
+    # NOTE: this currently includes files to be ignored in tree string -- these should maybe be excluded as well
+    # get all contents of the dir, ignoring dirs like build, target, etc. to save on token count for final tree string
+    # using fnmatch to allow for wildcard patterns in IGNORE_DIRS
+    items = [
+        item
+        for item in sorted(os.listdir(dir))
+        if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_DIRS)
+    ]
+
+    for i, item in enumerate(items):
+        item_path = os.path.join(dir, item)
+
+        # the last item in the list (contents of curr dir) has not more items printed below it
+        is_last_item = i == len(items) - 1
+        if is_last_item:
+            prefix = "└── " 
+        else:
+            prefix = "├── " 
+
+        # when printing contents nested in child dirs, we need to make sure to print the
+        # vertical bars to the left of these contents that connect the contents of the parent dir
+        if level > 0:
+            tree_str += "│   " * (level - 1)
+            tree_str += "│   "
+
+        # now add the item to the tree string and move to the next line for the next item
+        if os.path.isdir(item_path):
+            item += "/"
+        tree_str += prefix + item + "\n"
+
+        if os.path.isdir(item_path):
+            # follow the directory down to the next level of the tree
+            tree_str_child, file_paths = build_directory_tree(
+                item_path,
+                path=os.path.join(path, item),
+                level=level + 1,
+                file_paths=file_paths,
+                IGNORE_DIRS=IGNORE_DIRS,
+                IGNORE_FILES=IGNORE_FILES,
+            )
+            tree_str += tree_str_child
+        else:
+            # add file path to list if allowed file
+            if not any(fnmatch.fnmatch(item, pattern) for pattern in IGNORE_FILES):
+                file_paths.append(os.path.join(path, item))
+
+    return tree_str, file_paths
+
+
+def read_notebook(file: str) -> str:
+    """Read the contents of a Jupyter notebook file (.ipynb) and return a string representation of the cells"""
+    with open(file, "r") as f:
+        notebook = json.load(f)
+        cell_content = ["".join(cell["source"]) for cell in notebook["cells"]]
+        cell_types = [cell["cell_type"] for cell in notebook["cells"]]
+    
+    notebook_str = ""
+    for i, cell in enumerate(cell_content):
+        notebook_str += f"{'-'*10} Cell {i+1} ({cell_types[i]}) {'-'*10}\n"
+        notebook_str += cell + "\n\n"
+    return notebook_str
+    
+
+def build_prompt(
+        dir: str = ".", 
+        filters: list[str] = None, 
+        IGNORE_DIRS: list[str] = [], 
+        IGNORE_FILES: list[str] = []
+    ) -> str:
+    """Build a prompt for a directory, including a tree representation of the directory and the contents of each file in the directory that matches the filters"""
+    tree_str, file_paths = build_directory_tree(dir=dir, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+    prompt = f"<context>\n"
+    prompt += f"<directory_tree>\n{tree_str}</directory_tree>\n\n"
+
+    prompt += "<files>\n\n"
+    for file in file_paths:
+        # read only filtered files, if specified
+        if filters is None or any(file.endswith(ext) for ext in filters):
+            try:
+                if file.endswith(".ipynb"):
+                    file_content = read_notebook(file)
+                else:
+                    with open(os.path.join(dir, file), "r") as f:
+                        file_content = f.read()
+
+                # add file string to prompt
+                prompt += f"<file>\n"
+                prompt += f"<path>{file}</path>\n"
+                if not file_content.strip():
+                    file_content = "EMPTY FILE"
+                prompt += f"<content>\n{file_content}\n</content>\n"
+                prompt += f"</file>\n\n"
+                
+            except UnicodeDecodeError:
+                print(f"Unable to decode file content due to UnicodeDecodeError: {file}")
+            except FileNotFoundError:
+                print(f"File not found: {file}")
+
+    prompt += "</files>\n"
+    prompt += "</context>"
+    return prompt
+
+
+def load_config(config_path: str) -> dict:
+    try:
+        with open(config_path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise Exception(f"Config file not found: {config_path}")
+    
+
+def save_file(contents: str, outpath: str = ".", outfile: str = "out"):
+    path = os.path.join(outpath, f"{outfile}.txt")
+    with open(path, "w") as f:
+        f.write(contents)
+
+
+def parse_options():
+    parser = argparse.ArgumentParser(description="Generate a prompt for a directory")
+    parser.add_argument("--dir", type=str, default=".", help="Directory to generate prompt for")
+    parser.add_argument("--filters", type=str, nargs="+", help="File extensions to filter for")
+    parser.add_argument("--outpath", type=str, default=".", help="Output path for prompt file")
+    parser.add_argument("--outfile", type=str, help="Output file name for prompt file (default: <dir>_prompt)")
+    parser.add_argument("--ignore-dir", type=str, nargs="+", help="Additional directories to ignore: specify directory names (e.g., .git, __pycache__, etc.)")
+    parser.add_argument("--ignore-file", type=str, nargs="+", help="Additional file types to ignore: specify extensions with or without dot (e.g., py, ipynb, .c, etc.)")
+    parser.add_argument("--config", type=str, help="Path to the custom configuration file (default: config.json)")
+    args = parser.parse_args()
+
+    # set the outfile name
+    if args.outfile is None:
+        if args.dir == ".":
+            # replace "." with the actual base directory name
+            dir_name = os.path.basename(os.getcwd()) 
+        else:
+            dir_name = os.path.basename(args.dir)
+        args.outfile = f"{dir_name}_prompt"
+
+    # set the default config file path relative to the package root
+    if args.config is None:
+        args.config = str(files("src").joinpath("config.json"))
+    return args
+
+
+def main():
+    args = parse_options()
+
+    try:
+        config = load_config(args.config)
+    except Exception as e:
+        if args.config == os.path.join(os.path.dirname(__file__), "..", "config.json"):
+            raise Exception(f"Default config file not found: {args.config}") from e
+        else:
+            raise Exception(f"Custom config file not found: {args.config}") from e
+
+    IGNORE_DIRS = config["IGNORE_DIRS"]
+    IGNORE_FILES = config["IGNORE_FILES"]
+
+    # extend the default ignore lists with cli args
+    if args.ignore_dir:
+        IGNORE_DIRS.extend(args.ignore_dir)
+    if args.ignore_file:
+        IGNORE_FILES.extend(args.ignore_file)
+
+    prompt = build_prompt(dir=args.dir, filters=args.filters, IGNORE_DIRS=IGNORE_DIRS, IGNORE_FILES=IGNORE_FILES)
+
+    save_file(prompt, outpath=args.outpath, outfile=args.outfile)
+    
+    print(f"Prompt saved to {os.path.join(args.outpath, args.outfile)}.txt")
+
+
+if __name__ == "__main__":
+    main()
+</content>
+</file>
+
+</files>
+</context>

@@ -2,6 +2,7 @@ import os
 import json
 import fnmatch
 import argparse
+from importlib.resources import files
 
 
 def build_directory_tree(
@@ -19,7 +20,7 @@ def build_directory_tree(
         # add the base directory name to the tree string
         tree_str += f"{os.path.basename(os.getcwd() if dir == '.' else dir)}/\n"
 
-    # TODO: this currently includes files to be ignored in tree string -- these should maybe be excluded as well
+    # NOTE: this currently includes files to be ignored in tree string -- these should maybe be excluded as well
     # get all contents of the dir, ignoring dirs like build, target, etc. to save on token count for final tree string
     # using fnmatch to allow for wildcard patterns in IGNORE_DIRS
     items = [
@@ -156,10 +157,9 @@ def parse_options():
             dir_name = os.path.basename(args.dir)
         args.outfile = f"{dir_name}_prompt"
 
-    # set the default config file path relative to the package root
+    # set the default config file path 
     if args.config is None:
-        args.config = os.path.join(os.path.dirname(__file__), "..", "config.json")
-
+        args.config = str(files("src").joinpath("config.json"))
     return args
 
 
@@ -169,10 +169,7 @@ def main():
     try:
         config = load_config(args.config)
     except Exception as e:
-        if args.config == os.path.join(os.path.dirname(__file__), "..", "config.json"):
-            raise Exception(f"Default config file not found: {args.config}") from e
-        else:
-            raise Exception(f"Custom config file not found: {args.config}") from e
+        raise Exception(f"Config file not found: {args.config}") from e
 
     IGNORE_DIRS = config["IGNORE_DIRS"]
     IGNORE_FILES = config["IGNORE_FILES"]
