@@ -1,15 +1,15 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="d2p",
+    name="dir2prompt",
     version="1.0.0",
     packages=find_packages(),
     package_data={
-        "d2p": ["config.json"],   
+        "src": ["config.json"],   
     },
     entry_points={
         "console_scripts": [
-            "d2p=d2p.d2p:main"
+            "d2p=src.d2p:main"
         ],
     },
     author="Max Kieffer",

@@ -2,7 +2,6 @@ import os
 import json
 import fnmatch
 import argparse
-import importlib.resources
 
 
 def build_directory_tree(
