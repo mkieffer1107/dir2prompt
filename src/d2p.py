@@ -166,11 +166,7 @@ def parse_options():
 def main():
     args = parse_options()
 
-    try:
-        config = load_config(args.config)
-    except Exception as e:
-        raise Exception(f"Config file not found: {args.config}") from e
-
+    config = load_config(args.config)
     IGNORE_DIRS = config["IGNORE_DIRS"]
     IGNORE_FILES = config["IGNORE_FILES"]
 
