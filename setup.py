@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="dir2prompt",
-    version="1.0.0",
+    version="1.0.3",
     packages=find_packages(),
     package_data={
         "src": ["config.json"],   
@@ -14,7 +14,7 @@ setup(
     },
     author="Max Kieffer",
     author_email="wkieffer@ufl.edu",
-    description="A tool to generate prompts from directory contents",
+    description="Generate prompts for long-context LLMs using the content in your directory",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/mkieffer1107/dir2prompt",
