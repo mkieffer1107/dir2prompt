@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/dir2prompt.svg)](https://badge.fury.io/py/dir2prompt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`dir2prompt` is a Python package that generates prompts for long-context language models (LLMs) from the contents of a directory. It creates a tree representation of the directory structure and includes the contents of each file in the prompt, allowing you to easily feed the information from a directory to an LLM.
+When you feel too lazy to selectively copy code from various files in your project, just copy it all! Generate prompts for long-context LLMs using the content in your directories!
 
 ## Installation 💻
 
@@ -18,57 +18,52 @@ pip install dir2prompt
 To generate a prompt from a directory, use the `d2p` command followed by the desired options:
 
 ```sh
-d2p --dir /path/to/directory --filters .py .txt --ignore-dir .git __pycache__ --ignore-file .DS_Store
+d2p --dir [directory path] --filters [file extensions] --outpath [output path] --outfile [output file name] --ignore-dir [directories to ignore] --ignore-file [files to ignore] --config [path to config file]
+
 ```
-
-This command will generate a prompt for the specified directory, including only files with the extensions `.py` and `.txt`, ignoring the `.git` and `__pycache__` directories, and the `.DS_Store` file.
-
-The generated prompt will be saved as a `.txt` file in the current directory with the name `<directory_name>_prompt.txt`.
 
 ## Options ⚙️
 
---`dir`: The directory to generate the prompt for (default: current directory).
+`--dir`: The directory to generate the prompt for (default: current directory).
 
---`filters`: File extensions to include in the prompt (default: all files).
+`--filters`: File extensions to include in the prompt (default: all files).
 
---`outpath`: The output path for the prompt file (default: current directory).
+`--outpath`: The output path for the prompt file (default: current directory).
 
---`outfile`: The name of the output file (default: `<directory_name>_prompt`).
+`--outfile`: The name of the output file (default: `<directory_name>_prompt`).
 
---`ignore-dir`: Additional directories to ignore (e.g., `.git`, `__pycache__`).
+`--ignore-dir`: Additional directories to ignore (e.g., `experiments`, `run*`).
 
---`ignore-file`: Additional file types to ignore (e.g., `.DS_Store`, `.log`).
+`--ignore-file`: Additional file types to ignore (e.g., `.pt`, `.rs`).
 
---`config`: Path to a custom configuration file (default: `config.json` in the package directory).
-
-
-## Configuration 📋
-
-`dir2prompt` uses a configuration file (`config.json`) to specify the default directories and files to ignore. You can provide a custom configuration file using the `--config` option.
-
-The default `config.json` file includes commonly ignored directories and files. You can modify this file or create your own to suit your needs.
+`--config`: Path to a custom config file (default: `config.json` in the package directory).
 
 ## Example 🌟
 
-Here's an example of using `dir2prompt` to generate a prompt for a Python project directory:
+Here's an example of how to use `dir2prompt` to generate a prompt:
 
 ```sh
-d2p --dir /path/to/my/project --filters .py --ignore-dir .git __pycache__ --ignore-file .DS_Store
+d2p --dir /path/<dir_name> --filters .py .txt --ignore-dir experiments __pycache__ --ignore-file old.py
 ```
 
-This command will generate a prompt for the project directory, including only `.py` files and ignoring the `.git` and `__pycache__` directories, and the `.DS_Store` file.
+This command will generate a prompt for the specified directory, including only files with the extensions `.py` and `.txt`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
 
-The generated prompt will have the following structure:
+Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag.
 
+In this example, the generated prompt will be saved as a `.txt` file in the directory that `d2p` is called in with the name `<dir_name>_prompt.txt`, and will have the following structure:
+
+**<dir_name>_prompt.txt**
 ```xml
 <context>
 <directory_tree>
 project/
 ├── README.md
+├── experiments/
 ├── requirements.txt
 └── src/
     ├── __init__.py
-    └── main.py
+    ├── main.py
+    └── old.py
 </directory_tree>
 
 <files>
@@ -115,11 +110,35 @@ if __name__ == "__main__":
 </context>
 ```
 
-You can then feed this prompt to an LLM to provide it with context about your project.
+You can then feed this prompt into an LLM to provide it with context about your project 🦾
+
+## Config File 📋
+
+`dir2prompt` uses a config file, `config.json`, to list common directories and files that should be ignored and excluded from the prompt. You can customize the behavior by supplying your own config file using the `--config` option:
+
+**example.json**
+```json
+{
+    "IGNORE_DIRS": [
+        "experiments",
+        "run*",
+        ...
+    ],
+    "IGNORE_FILES": [
+        ".pt",
+        ".rs",
+        ...
+    ]
+}
+```
+
+
+
+
 
 ## License 📄
 
-`dir2prompt` is released under the MIT License.
+`dir2prompt` is released under the MIT License 🤓
 
 ## Contributing 🤝
 
