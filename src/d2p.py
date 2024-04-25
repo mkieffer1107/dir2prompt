@@ -145,7 +145,8 @@ def save_file(contents: str, outpath: str = ".", outfile: str = "out"):
 
 def parse_options():
     parser = argparse.ArgumentParser(description="Generate a prompt for a directory")
-    parser.add_argument("--dir", type=str, default=".", help="Directory to generate prompt for")
+    parser.add_argument("pos_dir", type=str, default=".", nargs="?", help="Directory to generate prompt for (positional argument)")
+    parser.add_argument("--dir", type=str, help="Directory to generate prompt for (optional flag)")
     parser.add_argument("--filters", type=str, nargs="+", help="File extensions to filter for")
     parser.add_argument("--outpath", type=str, default=".", help="Output path for prompt file")
     parser.add_argument("--outfile", type=str, help="Output file name for prompt file (default: <dir>_prompt)")
@@ -153,6 +154,10 @@ def parse_options():
     parser.add_argument("--ignore-file", type=str, nargs="+", help="Additional file types to ignore: specify extensions with or without dot (e.g., py, ipynb, .c, etc.)")
     parser.add_argument("--config", type=str, help="Path to the custom configuration file (default: config.json)")
     args = parser.parse_args()
+
+    # prioritize --dir flag over positional argument -- args.dir will be None if flag not invoked
+    # but pos_dir will always at least be the default value of "."
+    args.dir = args.dir or args.pos_dir
 
     # remove "/" from beginning and end of dir path so that we can work with the name alone
     if args.dir.startswith("/"): args.dir = args.dir[1:]

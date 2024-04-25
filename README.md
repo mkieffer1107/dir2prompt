@@ -22,6 +22,14 @@ d2p --dir [directory path] --filters [file extensions] --outpath [output path] -
 
 ```
 
+For ease of use, you can select a directory by passing it in as a positional argument
+
+```sh
+d2p [directory path]
+```
+
+If both the positional argument and the `--dir` flag are provided, the `--dir` flag takes priority.
+
 ## Options ⚙️
 
 `--dir`: The directory to generate the prompt for (default: current directory).
