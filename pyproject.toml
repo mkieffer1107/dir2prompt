@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dir2prompt"
-version = "1.0.6"
+version = "1.0.8"
 license = {file = "LICENSE"}
 authors = [
   { name="Max Kieffer", email="wkieffer@ufl.edu" },
@@ -39,8 +39,8 @@ Homepage = "https://github.com/mkieffer1107/dir2prompt"
 Issues = "https://github.com/mkieffer1107/dir2prompt/issues"
 
 [tool.setuptools]
-packages = ["src"]
-package-data = {"src" = ["config.json"]}
+packages = ["dir2prompt"]
+package-data = {"dir2prompt" = ["config.json"]}
 
 [project.scripts]
-d2p = "src.d2p:main"
+d2p = "dir2prompt.d2p:main"

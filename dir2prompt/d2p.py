@@ -171,7 +171,7 @@ def parse_options():
 
     # set the default config file path 
     if args.config is None:
-        args.config = str(files("src").joinpath("config.json"))
+        args.config = str(files("dir2prompt").joinpath("config.json"))
     return args
 
 
