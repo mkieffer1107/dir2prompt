@@ -160,9 +160,17 @@ def parse_options():
     if args.dir.startswith("/"): args.dir = args.dir[1:]
     if args.dir.endswith("/"): args.dir = args.dir[:-1]
 
-    # format the file extensions in ignore files to add a "*." prefix
+    # format the file extensions in ignore files
     if args.ignore_file:
-        args.ignore_file = [f"*{ext.lower()}" if ext.startswith(".") else f"*.{ext.lower()}" for ext in args.ignore_file]
+        formatted_ignore_files = []
+        for file in args.ignore_file:
+            if file.startswith("."):              
+                formatted_ignore_files.append(f"*{file}") # .py -> *.py
+            elif len(file) < 5: # 4 seems reasonable 
+                formatted_ignore_files.append(f"*{file}*") # docx -> *.docx
+            else:                                   
+                formatted_ignore_files.append(file) # explicit files like LICENSE and yolo.py
+        args.ignore_file = formatted_ignore_files
 
     # set the outfile name
     if args.outfile is None:
