@@ -160,6 +160,10 @@ def parse_options():
     if args.dir.startswith("/"): args.dir = args.dir[1:]
     if args.dir.endswith("/"): args.dir = args.dir[:-1]
 
+    # format the file extensions in ignore files to add a "*." prefix
+    if args.ignore_file:
+        args.ignore_file = [f"*{ext.lower()}" if ext.startswith(".") else f"*.{ext.lower()}" for ext in args.ignore_file]
+
     # set the outfile name
     if args.outfile is None:
         if args.dir == ".":
