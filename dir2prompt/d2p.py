@@ -46,7 +46,6 @@ def build_directory_tree(
             tree_str += "│   "
         # print(f"{'│   ' * level}{item} ({level})")
 
-
         # now add the item to the tree string and move to the next line for the next item
         if os.path.isdir(item_path):
             item += "/"
@@ -160,6 +159,15 @@ def parse_options():
     if args.dir.startswith("/"): args.dir = args.dir[1:]
     if args.dir.endswith("/"): args.dir = args.dir[:-1]
 
+    # set the outfile name
+    if args.outfile is None:
+        if args.dir == ".":
+            # replace "." with the actual base directory name
+            dir_name = os.path.basename(os.getcwd()) 
+        else:
+            dir_name = os.path.basename(args.dir)
+        args.outfile = f"{dir_name}_prompt"
+
     # format the file extensions in ignore files
     if args.ignore_file:
         formatted_ignore_files = []
@@ -171,15 +179,9 @@ def parse_options():
             else:                                   
                 formatted_ignore_files.append(file) # explicit files like LICENSE and yolo.py
         args.ignore_file = formatted_ignore_files
-
-    # set the outfile name
-    if args.outfile is None:
-        if args.dir == ".":
-            # replace "." with the actual base directory name
-            dir_name = os.path.basename(os.getcwd()) 
-        else:
-            dir_name = os.path.basename(args.dir)
-        args.outfile = f"{dir_name}_prompt"
+    
+    # also ignore the current prompt so that it doesn't become nested in itself
+    args.ignore_file.append(f"{args.outfile}.txt")
 
     # set the default config file path 
     if args.config is None:
