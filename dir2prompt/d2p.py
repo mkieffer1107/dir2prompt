@@ -181,8 +181,11 @@ def parse_options():
         args.ignore_file = formatted_ignore_files
     
     # also ignore the current prompt so that it doesn't become nested in itself
-    args.ignore_file.append(f"{args.outfile}.txt")
-
+    if not args.ignore_file:
+        args.ignore_file = [f"{args.outfile}.txt"]
+    else:
+        args.ignore_file.append(f"{args.outfile}.txt")
+        
     # set the default config file path 
     if args.config is None:
         args.config = str(files("dir2prompt").joinpath("config.json"))
