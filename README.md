@@ -43,12 +43,12 @@ d2p --dir [directory path] --filters [file extensions] --outpath [output path] -
 Here's an example of how to use `dir2prompt` to generate a prompt:
 
 ```sh
-d2p --dir /path/<dir_name> --filters .py .txt --ignore-dir experiments __pycache__ --ignore-file old.py
+d2p --dir /path/<dir_name> --filters .py .txt .md .ipynb --ignore-dir experiments __pycache__ --ignore-file old.py
 ```
 
-This command will generate a prompt for the specified directory, including only files with the extensions `.py` and `.txt`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
+This command will generate a prompt for the specified directory, including only files with the extensions `.py`, `.txt`, `.md`, `.ipynb`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
 
-Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag.
+Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag. This might be changed later...
 
 In this example, the generated prompt will be saved as a `.txt` file in the directory that `d2p` is called in with the name `<dir_name>_prompt.txt`, and will have the following structure:
 
@@ -58,12 +58,13 @@ In this example, the generated prompt will be saved as a `.txt` file in the dire
 <directory_tree>
 project/
 ├── README.md
-├── experiments/
 ├── requirements.txt
 └── src/
     ├── __init__.py
     ├── main.py
-    └── old.py
+    ├── old.py
+    ├── production.ipynb
+    └── testing.rs
 </directory_tree>
 
 <files>
@@ -103,6 +104,24 @@ def main():
 
 if __name__ == "__main__":
     main()
+</content>
+</file>
+
+<file>
+<path>src/production.ipynb</path>
+<content>
+---------- Cell 1 (markdown) ----------
+### Biologically inspired artificial neuron 
+
+$$
+y = mx + b
+$$
+
+---------- Cell 2 (code) ----------
+def neuron(x, m, b):
+    return m * x + b
+
+
 </content>
 </file>
 

@@ -1,4 +1,8 @@
+# Project specific
 .DS_Store
+project
+project_prompt.txt
+*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

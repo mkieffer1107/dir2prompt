@@ -44,11 +44,16 @@ def build_directory_tree(
         if level > 0:
             tree_str += "│   " * (level - 1)
             tree_str += "│   "
+            
+        # i want to see what level the files are on
+        # so if it is a file, print its name and level
+        print(f"{'│   ' * level}{item} ({level})")
+
 
         # now add the item to the tree string and move to the next line for the next item
         if os.path.isdir(item_path):
             item += "/"
-        tree_str += prefix + item + "\n"
+        tree_str += prefix + item + f" ({level})" + "\n"
 
         if os.path.isdir(item_path):
             # follow the directory down to the next level of the tree
@@ -98,11 +103,12 @@ def build_prompt(
     for file in file_paths:
         # read only filtered files, if specified
         if filters is None or any(file.endswith(ext) for ext in filters):
+            filepath = os.path.join(dir, file)
             try:
                 if file.endswith(".ipynb"):
-                    file_content = read_notebook(file)
+                    file_content = read_notebook(filepath)
                 else:
-                    with open(os.path.join(dir, file), "r") as f:
+                    with open(filepath, "r") as f:
                         file_content = f.read()
 
                 # add file string to prompt
@@ -147,6 +153,10 @@ def parse_options():
     parser.add_argument("--ignore-file", type=str, nargs="+", help="Additional file types to ignore: specify extensions with or without dot (e.g., py, ipynb, .c, etc.)")
     parser.add_argument("--config", type=str, help="Path to the custom configuration file (default: config.json)")
     args = parser.parse_args()
+
+    # remove "/" from beginning and end of dir path so that we can work with the name alone
+    if args.dir.startswith("/"): args.dir = args.dir[1:]
+    if args.dir.endswith("/"): args.dir = args.dir[:-1]
 
     # set the outfile name
     if args.outfile is None:
