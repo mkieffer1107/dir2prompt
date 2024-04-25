@@ -44,16 +44,13 @@ def build_directory_tree(
         if level > 0:
             tree_str += "│   " * (level - 1)
             tree_str += "│   "
-            
-        # i want to see what level the files are on
-        # so if it is a file, print its name and level
-        print(f"{'│   ' * level}{item} ({level})")
+        # print(f"{'│   ' * level}{item} ({level})")
 
 
         # now add the item to the tree string and move to the next line for the next item
         if os.path.isdir(item_path):
             item += "/"
-        tree_str += prefix + item + f" ({level})" + "\n"
+        tree_str += prefix + item + "\n"
 
         if os.path.isdir(item_path):
             # follow the directory down to the next level of the tree
