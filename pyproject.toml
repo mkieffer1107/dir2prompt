@@ -1,6 +1,6 @@
 [project]
 name = "dir2prompt"
-version = "2.0.1"
+version = "2.0.3"
 license = {file = "LICENSE"}
 authors = [
   { name="Max Kieffer", email="wkieffer@ufl.edu" },

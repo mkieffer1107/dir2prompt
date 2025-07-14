@@ -239,6 +239,9 @@ fn collect_dirs(abs: &Path, dir_pats: &[Pattern]) -> anyhow::Result<HashSet<Stri
     entries.sort();
 
     for entry in entries {
+        if entry.starts_with(".") {
+            continue;
+        }
         let abs_path = abs.join(&entry);
         if abs_path.is_dir() {
             if !dir_pats.iter().any(|p| p.is_match(&entry)) {
@@ -266,6 +269,9 @@ fn walk(
     for entry_res in fs::read_dir(abs)? {
         if let Ok(dir_entry) = entry_res {
             let entry = dir_entry.file_name().to_string_lossy().into_owned();
+            if entry.starts_with(".") {
+                continue;
+            }
             let abs_path = abs.join(&entry);
             let ignore = if abs_path.is_dir() {
                 dir_pats.iter().any(|p| p.is_match(&entry))
