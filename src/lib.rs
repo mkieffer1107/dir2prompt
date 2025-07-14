@@ -37,15 +37,15 @@ struct Cli {
     dir: String,
 
     /// File-extension filters
-    #[arg(long, help = "Filter for and process only files with these extensions (e.g., --filters py rs txt md)")]
-    filters: Vec<String>,
+    #[arg(long, num_args = 1.., help = "Filter for and process only files with these extensions (e.g., --filters py rs txt md)")]
+    filter: Vec<String>,
 
     /// Additional directories to ignore
-    #[arg(long = "ignore-dir", help = "Additional directories to ignore (e.g. --ignore-dir experiments __pycache__)")]
+    #[arg(long = "ignore-dir", num_args = 1.., help = "Additional directories to ignore (e.g. --ignore-dir experiments __pycache__)")]
     ignore_dirs: Vec<String>,
 
     /// Additional files to ignore
-    #[arg(long = "ignore-file", help = "Additional files or extensions to ignore (e.g. --ignore-file old.py rs)")]
+    #[arg(long = "ignore-file", num_args = 1.., help = "Additional files or extensions to ignore (e.g. --ignore-file old.py rs)")]
     ignore_files: Vec<String>,
 
     /// Output path for prompt file
@@ -127,7 +127,7 @@ fn run_cli<I: IntoIterator<Item = String>>(raw_args: I) -> anyhow::Result<()> {
 
         let prompt = build_prompt_internal(
             &cli.dir,
-            &cli.filters,
+            &cli.filter,
             &dir_ignore,
             &merge(&config.files, &cli.ignore_files),
         )?;
@@ -153,21 +153,21 @@ fn load_config(path: &Path) -> anyhow::Result<IgnoreConfig> {
 
 /// ----------  Python-facing build_prompt()  ----------
 #[pyfunction]
-#[pyo3(signature = (dir=".", filters=Vec::<String>::new(), ignore_dirs=Vec::<String>::new(), ignore_files=Vec::<String>::new()))]
+#[pyo3(signature = (dir=".", filter=Vec::<String>::new(), ignore_dirs=Vec::<String>::new(), ignore_files=Vec::<String>::new()))]
 fn build_prompt(
     dir: &str,
-    filters: Vec<String>,
+    filter: Vec<String>,
     ignore_dirs: Vec<String>,
     ignore_files: Vec<String>,
 ) -> PyResult<String> {
-    build_prompt_internal(dir, &filters, &ignore_dirs, &ignore_files)
+    build_prompt_internal(dir, &filter, &ignore_dirs, &ignore_files)
         .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
 }
 
 /// Shared implementation for CLI + Python call
 fn build_prompt_internal(
     dir: &str,
-    filters: &[String],
+    filter: &[String],
     ignore_dirs: &[String],
     ignore_files: &[String],
 ) -> anyhow::Result<String> {
@@ -216,7 +216,7 @@ fn build_prompt_internal(
 
     for rel in files {
         let full = dir_path.join(&rel);
-        if filters.is_empty() || filters.iter().any(|f| rel.to_string_lossy().ends_with(f)) {
+        if filter.is_empty() || filter.iter().any(|f| rel.to_string_lossy().ends_with(f)) {
             let content = fs::read_to_string(&full).unwrap_or_else(|_| "BINARY OR UNREADABLE".into());
             prompt.push_str(&format!(
                 "<file>\n<path>{}</path>\n<content>\n{}\n</content>\n</file>\n\n",

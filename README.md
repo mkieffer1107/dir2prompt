@@ -30,7 +30,7 @@ d2p [directory path]
 
 ## Options ⚙️
 
-`--filters`: File extensions to include in the prompt (default: all files).
+`--filter`: File extensions to include in the prompt (default: all files).
 
 `--outpath`: The output path for the prompt file (default: current directory).
 
@@ -49,7 +49,7 @@ d2p [directory path]
 Here's an example of how to use `dir2prompt` to generate a prompt:
 
 ```sh
-d2p --filters py txt md ipynb --ignore-dir experiments __pycache__ --ignore-file old.py
+d2p --filter py txt md ipynb --ignore-dir experiments __pycache__ --ignore-file old.py
 ```
 
 This command will generate a prompt for the specified directory, including only files with the extensions `py`, `txt`, `md`, `ipynb`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
