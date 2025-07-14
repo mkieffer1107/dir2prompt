@@ -75,6 +75,60 @@ fn cli(py: Python<'_>) -> PyResult<()> {
         .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
 }
 
+// --- CLEANING LOGIC ---
+
+/// Pass 1: Recursively find the names of all valid subdirectories.
+fn collect_all_sub_dir_names(
+    current_dir: &Path,
+    dir_patterns: &[Pattern],
+    names_set: &mut HashSet<String>
+) -> anyhow::Result<()> {
+    if !current_dir.is_dir() {
+        return Ok(());
+    }
+
+    for entry in fs::read_dir(current_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_dir() {
+            let name = path.file_name().unwrap_or_default().to_string_lossy();
+            if !name.starts_with('.') && !dir_patterns.iter().any(|p| p.is_match(&name)) {
+                if let Some(sub_name) = path.file_name().and_then(|s| s.to_str()) {
+                    names_set.insert(sub_name.to_string());
+                }
+                // Recurse into the valid subdirectory
+                collect_all_sub_dir_names(&path, dir_patterns, names_set)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Pass 2: Recursively find all candidate prompt files.
+fn find_all_prompts(
+    current_dir: &Path,
+    prompt_files: &mut Vec<PathBuf>
+) -> anyhow::Result<()> {
+    if !current_dir.is_dir() {
+        return Ok(());
+    }
+
+    for entry in fs::read_dir(current_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_dir() {
+            // Descend into all directories, even ignored ones, to find prompts.
+            find_all_prompts(&path, prompt_files)?;
+        } else if let Some(filename) = path.file_name().and_then(|s| s.to_str()) {
+            if filename.ends_with("_prompt.txt") {
+                prompt_files.push(path);
+            }
+        }
+    }
+    Ok(())
+}
+
+
 /// Real CLI body so we can call it from native tests too.
 fn run_cli<I: IntoIterator<Item = String>>(raw_args: I) -> anyhow::Result<()> {
     // Insert dummy program name so clap parses flags correctly
@@ -93,36 +147,59 @@ fn run_cli<I: IntoIterator<Item = String>>(raw_args: I) -> anyhow::Result<()> {
     let dir_patterns = compile_patterns(&dir_ignore)?;
 
     if cli.clean {
-        let dir_path = Path::new(&cli.dir);
-        let base = if cli.dir == "." {
-            env::current_dir()?.file_name().unwrap().to_string_lossy().into_owned()
-        } else {
-            dir_path
-                .file_name()
-                .ok_or_else(|| anyhow::anyhow!("invalid directory"))?
-                .to_string_lossy()
-                .into_owned()
-        };
-        let mut dir_names: HashSet<String> = HashSet::new();
-        dir_names.insert(base);
-        let sub_dirs = collect_dirs(dir_path, &dir_patterns)?;
-        dir_names.extend(sub_dirs);
+        let start_path = Path::new(&cli.dir);
+        if !start_path.is_dir() {
+            anyhow::bail!("Invalid directory provided for cleaning: '{}'", cli.dir);
+        }
 
-        for name in dir_names {
-            let prompt_file = Path::new(&cli.outpath).join(format!("{}_prompt.txt", name));
-            if prompt_file.exists() {
-                fs::remove_file(&prompt_file)?;
-                println!("Removed {}", prompt_file.display());
+        // Pass 1: Collect all valid directory names in the project.
+        let mut valid_dir_names = HashSet::new();
+        // First, get the actual name of the starting directory and add it.
+        let root_name = start_path.canonicalize()?
+            .file_name()
+            .and_then(|s| s.to_str())
+            .map(String::from)
+            .ok_or_else(|| anyhow::anyhow!("Could not determine name of start directory"))?;
+        valid_dir_names.insert(root_name);
+        // Then, recursively add all of its subdirectories.
+        collect_all_sub_dir_names(start_path, &dir_patterns, &mut valid_dir_names)?;
+
+        // Pass 2: Find all potential prompt files in the entire tree.
+        let mut prompt_files_to_check = Vec::new();
+        find_all_prompts(start_path, &mut prompt_files_to_check)?;
+        
+        let mut cleaned_count = 0;
+
+        // Pass 3: Validate and delete.
+        for file_path in prompt_files_to_check {
+            if let Some(stem) = file_path.file_stem().and_then(|s| s.to_str()) {
+                if let Some(base_name) = stem.strip_suffix("_prompt") {
+                    if valid_dir_names.contains(base_name) {
+                        fs::remove_file(&file_path)?;
+                        println!("Removed {}", file_path.display());
+                        cleaned_count += 1;
+                    }
+                }
             }
         }
+
+        if cleaned_count == 0 {
+            println!("No matching prompt files found to clean starting from '{}'.", start_path.display());
+        }
+        
         Ok(())
+
     } else {
-        let dir_path = Path::new(&cli.dir);
-        let dir_name = if cli.dir == "." {
-            env::current_dir()?.file_name().unwrap().to_string_lossy().to_string()
-        } else {
-            dir_path.file_name().ok_or_else(|| anyhow::anyhow!("invalid directory"))?.to_string_lossy().to_string()
-        };
+        let root_path = Path::new(&cli.dir)
+            .canonicalize()
+            .map_err(|e| anyhow::anyhow!("invalid directory '{}': {}", &cli.dir, e))?;
+            
+        let dir_name = root_path
+            .file_name()
+            .ok_or_else(|| anyhow::anyhow!("invalid directory"))?
+            .to_string_lossy()
+            .to_string();
+            
         let outfile = cli.outfile.unwrap_or_else(|| format!("{}_prompt", dir_name));
 
         let prompt = build_prompt_internal(
@@ -232,6 +309,9 @@ fn build_prompt_internal(
 /// Collect non-ignored directory names
 fn collect_dirs(abs: &Path, dir_pats: &[Pattern]) -> anyhow::Result<HashSet<String>> {
     let mut dirs = HashSet::new();
+    if !abs.is_dir() {
+        return Ok(dirs);
+    }
     let mut entries: Vec<_> = fs::read_dir(abs)?
         .filter_map(|e| e.ok())
         .map(|e| e.file_name().to_string_lossy().into_owned())
@@ -239,7 +319,7 @@ fn collect_dirs(abs: &Path, dir_pats: &[Pattern]) -> anyhow::Result<HashSet<Stri
     entries.sort();
 
     for entry in entries {
-        if entry.starts_with(".") {
+        if entry.starts_with('.') {
             continue;
         }
         let abs_path = abs.join(&entry);
@@ -269,7 +349,7 @@ fn walk(
     for entry_res in fs::read_dir(abs)? {
         if let Ok(dir_entry) = entry_res {
             let entry = dir_entry.file_name().to_string_lossy().into_owned();
-            if entry.starts_with(".") {
+            if entry.starts_with('.') {
                 continue;
             }
             let abs_path = abs.join(&entry);
