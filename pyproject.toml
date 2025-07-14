@@ -1,10 +1,6 @@
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "dir2prompt"
-version = "1.0.13"
+version = "2.0.0"
 license = {file = "LICENSE"}
 authors = [
   { name="Max Kieffer", email="wkieffer@ufl.edu" },
@@ -16,11 +12,6 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
 ]
 keywords = [
     "prompt engineering",
@@ -38,9 +29,9 @@ keywords = [
 Homepage = "https://github.com/mkieffer1107/dir2prompt"
 Issues = "https://github.com/mkieffer1107/dir2prompt/issues"
 
-[tool.setuptools]
-packages = ["dir2prompt"]
-package-data = {"dir2prompt" = ["config.json"]}
-
 [project.scripts]
-d2p = "dir2prompt.d2p:main"
+d2p = "dir2prompt:cli"
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"

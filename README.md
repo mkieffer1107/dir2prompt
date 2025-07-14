@@ -18,7 +18,7 @@ pip install dir2prompt
 To generate a prompt from a directory, use the `d2p` command followed by the desired options:
 
 ```sh
-d2p --dir [directory path] --filters [file extensions] --outpath [output path] --outfile [output file name] --ignore-dir [directories to ignore] --ignore-file [files to ignore] --config [path to config file]
+d2p [directory path] --filters [file extensions] --outpath [output path] --outfile [output file name] --ignore-dir [directories to ignore] --ignore-file [files to ignore] --config [path to config file]
 
 ```
 
@@ -28,11 +28,7 @@ For ease of use, you can select a directory by passing it in as a positional arg
 d2p [directory path]
 ```
 
-If both the positional argument and the `--dir` flag are provided, the `--dir` flag takes priority.
-
 ## Options ⚙️
-
-`--dir`: The directory to generate the prompt for (default: current directory).
 
 `--filters`: File extensions to include in the prompt (default: all files).
 
@@ -42,23 +38,25 @@ If both the positional argument and the `--dir` flag are provided, the `--dir` f
 
 `--ignore-dir`: Additional directories to ignore (e.g., `experiments`, `run*`).
 
-`--ignore-file`: Additional file types to ignore (e.g., `.pt`, `.rs`).
+`--ignore-file`: Additional file types to ignore (e.g., `pt`, `rs`).
 
 `--config`: Path to a custom config file (default: `config.json` in the package directory).
+
+`--clean`: Remove all `<folder>_prompt.txt` files based on discovered directories.
 
 ## Example 🌟
 
 Here's an example of how to use `dir2prompt` to generate a prompt:
 
 ```sh
-d2p --dir project --filters .py .txt .md .ipynb --ignore-dir experiments __pycache__ --ignore-file old.py
+d2p --filters py txt md ipynb --ignore-dir experiments __pycache__ --ignore-file old.py
 ```
 
-This command will generate a prompt for the specified directory, including only files with the extensions `.py`, `.txt`, `.md`, `.ipynb`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
+This command will generate a prompt for the specified directory, including only files with the extensions `py`, `txt`, `md`, `ipynb`, ignoring the `experiments` and `__pycache__` directories, and ignoring the `old.py` file. 
 
 Note that ignored directories are not included in the directory tree, but that ignored files are. However, the content of the ignored files will not be written to the final prompt under the `<files>` tag. This might be changed later...
 
-In this example, the generated prompt will be saved as a `.txt` file in the directory that `d2p` is called in with the name `project_prompt.txt`, and will have the following structure:
+In this example, the generated prompt will be saved as a `txt` file in the directory that `d2p` is called in with the name `project_prompt.txt`, and will have the following structure:
 
 **<dir_name>_prompt.txt**
 ```xml
