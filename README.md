@@ -44,6 +44,10 @@ d2p [directory path]
 
 `--clean`: Remove all `<folder>_prompt.txt` files based on discovered directories.
 
+`--tree`: Only include directory tree in prompt.
+
+`--cp`: Copy prompt to clipboard.
+
 ## Example 🌟
 
 Here's an example of how to use `dir2prompt` to generate a prompt:

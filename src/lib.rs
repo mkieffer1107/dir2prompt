@@ -1,11 +1,13 @@
 use std::{
+    collections::HashSet,
     env,
     fs,
     path::{Path, PathBuf},
-    collections::HashSet,
 };
 
+use arboard::Clipboard;
 use clap::Parser;
+use colored::Colorize;
 use once_cell::sync::Lazy;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
@@ -24,9 +26,8 @@ struct IgnoreConfig {
 }
 
 /// Lazily parse the default ignore lists once.
-static DEFAULT_IGNORE: Lazy<IgnoreConfig> = Lazy::new(|| {
-    serde_json::from_str(DEFAULT_CONFIG).expect("embedded config.json is valid")
-});
+static DEFAULT_IGNORE: Lazy<IgnoreConfig> =
+    Lazy::new(|| serde_json::from_str(DEFAULT_CONFIG).expect("embedded config.json is valid"));
 
 /// ----------  Command-line interface  ----------
 #[derive(Parser, Debug)]
@@ -63,6 +64,14 @@ struct Cli {
     /// Clean up all <folder>_prompt.txt files
     #[arg(long, help = "Remove all <folder>_prompt.txt files based on discovered directories")]
     clean: bool,
+
+    /// Only include the directory tree in the prompt and print it to the terminal
+    #[arg(long = "tree", help = "Only include the directory tree in the prompt and print it to the terminal")]
+    tree_only: bool,
+
+    /// Copy the generated prompt to the clipboard
+    #[arg(long = "cp", help = "Copy the generated prompt to the clipboard")]
+    cp: bool,
 }
 
 /// Exported for use in Python’s console-script stub.
@@ -81,7 +90,7 @@ fn cli(py: Python<'_>) -> PyResult<()> {
 fn collect_all_sub_dir_names(
     current_dir: &Path,
     dir_patterns: &[Pattern],
-    names_set: &mut HashSet<String>
+    names_set: &mut HashSet<String>,
 ) -> anyhow::Result<()> {
     if !current_dir.is_dir() {
         return Ok(());
@@ -107,7 +116,7 @@ fn collect_all_sub_dir_names(
 /// Pass 2: Recursively find all candidate prompt files.
 fn find_all_prompts(
     current_dir: &Path,
-    prompt_files: &mut Vec<PathBuf>
+    prompt_files: &mut Vec<PathBuf>,
 ) -> anyhow::Result<()> {
     if !current_dir.is_dir() {
         return Ok(());
@@ -127,7 +136,6 @@ fn find_all_prompts(
     }
     Ok(())
 }
-
 
 /// Real CLI body so we can call it from native tests too.
 fn run_cli<I: IntoIterator<Item = String>>(raw_args: I) -> anyhow::Result<()> {
@@ -154,29 +162,27 @@ fn run_cli<I: IntoIterator<Item = String>>(raw_args: I) -> anyhow::Result<()> {
 
         // Pass 1: Collect all valid directory names in the project.
         let mut valid_dir_names = HashSet::new();
-        // First, get the actual name of the starting directory and add it.
-        let root_name = start_path.canonicalize()?
+        let root_name = start_path
+            .canonicalize()?
             .file_name()
             .and_then(|s| s.to_str())
             .map(String::from)
             .ok_or_else(|| anyhow::anyhow!("Could not determine name of start directory"))?;
         valid_dir_names.insert(root_name);
-        // Then, recursively add all of its subdirectories.
         collect_all_sub_dir_names(start_path, &dir_patterns, &mut valid_dir_names)?;
 
         // Pass 2: Find all potential prompt files in the entire tree.
         let mut prompt_files_to_check = Vec::new();
         find_all_prompts(start_path, &mut prompt_files_to_check)?;
-        
-        let mut cleaned_count = 0;
 
+        let mut cleaned_count = 0;
         // Pass 3: Validate and delete.
         for file_path in prompt_files_to_check {
             if let Some(stem) = file_path.file_stem().and_then(|s| s.to_str()) {
                 if let Some(base_name) = stem.strip_suffix("_prompt") {
                     if valid_dir_names.contains(base_name) {
                         fs::remove_file(&file_path)?;
-                        println!("Removed {}", file_path.display());
+                        println!("Removed {}", file_path.display().to_string().cyan());
                         cleaned_count += 1;
                     }
                 }
@@ -184,34 +190,52 @@ fn run_cli<I: IntoIterator<Item = String>>(raw_args: I) -> anyhow::Result<()> {
         }
 
         if cleaned_count == 0 {
-            println!("No matching prompt files found to clean starting from '{}'.", start_path.display());
+            println!(
+                "No matching prompt files found to clean starting from '{}'.",
+                start_path.display().to_string().cyan()
+            );
         }
-        
         Ok(())
-
     } else {
         let root_path = Path::new(&cli.dir)
             .canonicalize()
             .map_err(|e| anyhow::anyhow!("invalid directory '{}': {}", &cli.dir, e))?;
-            
+
         let dir_name = root_path
             .file_name()
             .ok_or_else(|| anyhow::anyhow!("invalid directory"))?
             .to_string_lossy()
             .to_string();
-            
-        let outfile = cli.outfile.unwrap_or_else(|| format!("{}_prompt", dir_name));
 
+        let outfile = cli
+            .outfile
+            .unwrap_or_else(|| format!("{}_prompt", dir_name));
+
+        // Generate the plain text prompt first.
         let prompt = build_prompt_internal(
             &cli.dir,
             &cli.filter,
             &dir_ignore,
             &merge(&config.files, &cli.ignore_files),
+            cli.tree_only,
         )?;
 
+        // If tree_only, print the plain text tree to the console.
+        if cli.tree_only {
+            println!("{}", prompt);
+        }
+
+        // If cp, copy the plain text prompt to the clipboard.
+        if cli.cp {
+            let mut clipboard = Clipboard::new()?;
+            clipboard.set_text(&prompt)?;
+            println!("{}", "Prompt copied to clipboard.".green());
+        }
+
+        // Save the plain text prompt to the file.
         let outpath = Path::new(&cli.outpath).join(format!("{outfile}.txt"));
-        fs::write(&outpath, prompt)?;
-        println!("Prompt saved to {}", outpath.display());
+        fs::write(&outpath, &prompt)?;
+        println!("Prompt saved to {}", outpath.display().to_string().cyan());
         Ok(())
     }
 }
@@ -230,14 +254,21 @@ fn load_config(path: &Path) -> anyhow::Result<IgnoreConfig> {
 
 /// ----------  Python-facing build_prompt()  ----------
 #[pyfunction]
-#[pyo3(signature = (dir=".", filter=Vec::<String>::new(), ignore_dirs=Vec::<String>::new(), ignore_files=Vec::<String>::new()))]
+#[pyo3(signature = (
+    dir=".",
+    filter=Vec::<String>::new(),
+    ignore_dirs=Vec::<String>::new(),
+    ignore_files=Vec::<String>::new(),
+    tree_only=false
+))]
 fn build_prompt(
     dir: &str,
     filter: Vec<String>,
     ignore_dirs: Vec<String>,
     ignore_files: Vec<String>,
+    tree_only: bool,
 ) -> PyResult<String> {
-    build_prompt_internal(dir, &filter, &ignore_dirs, &ignore_files)
+    build_prompt_internal(dir, &filter, &ignore_dirs, &ignore_files, tree_only)
         .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
 }
 
@@ -247,6 +278,7 @@ fn build_prompt_internal(
     filter: &[String],
     ignore_dirs: &[String],
     ignore_files: &[String],
+    tree_only: bool,
 ) -> anyhow::Result<String> {
     // 1. prepare ignore globs
     let dir_patterns = compile_patterns(ignore_dirs)?;
@@ -255,7 +287,11 @@ fn build_prompt_internal(
     // Collect all non-ignored directory names
     let dir_path = Path::new(dir);
     let base = if dir == "." {
-        env::current_dir()?.file_name().unwrap().to_string_lossy().into_owned()
+        env::current_dir()?
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .into_owned()
     } else {
         dir_path
             .file_name()
@@ -269,7 +305,8 @@ fn build_prompt_internal(
     dir_names.extend(sub_dirs);
 
     // Create exact patterns for <dir>_prompt.txt
-    let prompt_ignores: Vec<String> = dir_names.iter().map(|d| format!("{}_prompt.txt", d)).collect();
+    let prompt_ignores: Vec<String> =
+        dir_names.iter().map(|d| format!("{}_prompt.txt", d)).collect();
     let prompt_patterns = compile_patterns(&prompt_ignores)?;
 
     // 2. walk directory, collect files, render tree
@@ -286,6 +323,10 @@ fn build_prompt_internal(
         &mut files,
     )?;
 
+    if tree_only {
+        return Ok(tree);
+    }
+
     // 3. stitch final prompt
     let mut prompt = String::from("<context>\n<directory_tree>\n");
     prompt.push_str(&tree);
@@ -293,12 +334,21 @@ fn build_prompt_internal(
 
     for rel in files {
         let full = dir_path.join(&rel);
-        if filter.is_empty() || filter.iter().any(|f| rel.to_string_lossy().ends_with(f)) {
-            let content = fs::read_to_string(&full).unwrap_or_else(|_| "BINARY OR UNREADABLE".into());
+        if filter.is_empty()
+            || filter
+                .iter()
+                .any(|f| rel.to_string_lossy().ends_with(f))
+        {
+            let content =
+                fs::read_to_string(&full).unwrap_or_else(|_| "BINARY OR UNREADABLE".into());
             prompt.push_str(&format!(
                 "<file>\n<path>{}</path>\n<content>\n{}\n</content>\n</file>\n\n",
                 rel.display(),
-                if content.trim().is_empty() { "EMPTY FILE" } else { &content }
+                if content.trim().is_empty() {
+                    "EMPTY FILE"
+                } else {
+                    &content
+                }
             ));
         }
     }
@@ -348,18 +398,24 @@ fn walk(
     let mut visible_entries: Vec<String> = Vec::new();
     for entry_res in fs::read_dir(abs)? {
         if let Ok(dir_entry) = entry_res {
-            let entry = dir_entry.file_name().to_string_lossy().into_owned();
-            if entry.starts_with('.') {
+            let entry_name = dir_entry.file_name().to_string_lossy().into_owned();
+            if entry_name.starts_with('.') {
                 continue;
             }
-            let abs_path = abs.join(&entry);
+
+            let rel_path = rel.join(&entry_name);
+            let rel_path_str = rel_path.to_string_lossy();
+            let abs_path = abs.join(&entry_name);
+
             let ignore = if abs_path.is_dir() {
-                dir_pats.iter().any(|p| p.is_match(&entry))
+                dir_pats.iter().any(|p| p.is_match(&rel_path_str))
             } else {
-                file_pats.iter().any(|p| p.is_match(&entry)) || prompt_pats.iter().any(|p| p.is_match(&entry))
+                file_pats.iter().any(|p| p.is_match(&rel_path_str))
+                    || prompt_pats.iter().any(|p| p.is_match(&rel_path_str))
             };
+
             if !ignore {
-                visible_entries.push(entry);
+                visible_entries.push(entry_name);
             }
         }
     }
