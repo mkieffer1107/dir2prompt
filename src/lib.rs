@@ -12,7 +12,7 @@ use once_cell::sync::Lazy;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use serde::Deserialize;
-use yash_fnmatch::{without_escape, Pattern};
+// use yash_fnmatch::{without_escape, Pattern}; 
 
 /// ----------  Config that used to live in config.json  ----------
 static DEFAULT_CONFIG: &str = include_str!("config.json");
@@ -89,7 +89,7 @@ fn cli(py: Python<'_>) -> PyResult<()> {
 /// Pass 1: Recursively find the names of all valid subdirectories.
 fn collect_all_sub_dir_names(
     current_dir: &Path,
-    dir_patterns: &[Pattern],
+    ignore_dirs: &[String],
     names_set: &mut HashSet<String>,
 ) -> anyhow::Result<()> {
     if !current_dir.is_dir() {
@@ -101,17 +101,18 @@ fn collect_all_sub_dir_names(
         let path = entry.path();
         if path.is_dir() {
             let name = path.file_name().unwrap_or_default().to_string_lossy();
-            if !name.starts_with('.') && !dir_patterns.iter().any(|p| p.is_match(&name)) {
+            if !name.starts_with('.') && !ignore_dirs.contains(&name.to_string()) {
                 if let Some(sub_name) = path.file_name().and_then(|s| s.to_str()) {
                     names_set.insert(sub_name.to_string());
                 }
                 // Recurse into the valid subdirectory
-                collect_all_sub_dir_names(&path, dir_patterns, names_set)?;
+                collect_all_sub_dir_names(&path, ignore_dirs, names_set)?;
             }
         }
     }
     Ok(())
 }
+
 
 /// Pass 2: Recursively find all candidate prompt files.
 fn find_all_prompts(
@@ -152,7 +153,6 @@ fn run_cli<I: IntoIterator<Item = String>>(raw_args: I) -> anyhow::Result<()> {
         .unwrap_or_else(|| DEFAULT_IGNORE.clone());
 
     let dir_ignore = merge(&config.dirs, &cli.ignore_dirs);
-    let dir_patterns = compile_patterns(&dir_ignore)?;
 
     if cli.clean {
         let start_path = Path::new(&cli.dir);
@@ -169,7 +169,7 @@ fn run_cli<I: IntoIterator<Item = String>>(raw_args: I) -> anyhow::Result<()> {
             .map(String::from)
             .ok_or_else(|| anyhow::anyhow!("Could not determine name of start directory"))?;
         valid_dir_names.insert(root_name);
-        collect_all_sub_dir_names(start_path, &dir_patterns, &mut valid_dir_names)?;
+        collect_all_sub_dir_names(start_path, &dir_ignore, &mut valid_dir_names)?;
 
         // Pass 2: Find all potential prompt files in the entire tree.
         let mut prompt_files_to_check = Vec::new();
@@ -280,11 +280,7 @@ fn build_prompt_internal(
     ignore_files: &[String],
     tree_only: bool,
 ) -> anyhow::Result<String> {
-    // 1. prepare ignore globs
-    let dir_patterns = compile_patterns(ignore_dirs)?;
-    let file_patterns = compile_patterns(ignore_files)?;
-
-    // Collect all non-ignored directory names
+    // 1. Prepare ignore lists
     let dir_path = Path::new(dir);
     let base = if dir == "." {
         env::current_dir()?
@@ -299,15 +295,24 @@ fn build_prompt_internal(
             .to_string_lossy()
             .into_owned()
     };
+    
+    // Create a set of ignored file extensions for quick lookup, handling the leading dot.
+    let ignore_exts: HashSet<String> = ignore_files
+        .iter()
+        .map(|s| s.strip_prefix('.').unwrap_or(s).to_lowercase())
+        .collect();
+
+    // To prevent including previously generated prompts, find all valid dir names
+    // and add their corresponding prompt files to the ignore list.
     let mut dir_names: HashSet<String> = HashSet::new();
     dir_names.insert(base.clone());
-    let sub_dirs = collect_dirs(dir_path, &dir_patterns)?;
+    let sub_dirs = collect_dirs(dir_path, ignore_dirs)?;
     dir_names.extend(sub_dirs);
 
-    // Create exact patterns for <dir>_prompt.txt
     let prompt_ignores: Vec<String> =
         dir_names.iter().map(|d| format!("{}_prompt.txt", d)).collect();
-    let prompt_patterns = compile_patterns(&prompt_ignores)?;
+    
+    let all_ignore_files = merge(ignore_files, &prompt_ignores);
 
     // 2. walk directory, collect files, render tree
     let mut tree = format!("{}/\n", base);
@@ -316,9 +321,9 @@ fn build_prompt_internal(
         dir_path,
         Path::new(""),
         "",
-        &dir_patterns,
-        &file_patterns,
-        &prompt_patterns,
+        ignore_dirs,
+        &all_ignore_files,
+        &ignore_exts,
         &mut tree,
         &mut files,
     )?;
@@ -357,7 +362,7 @@ fn build_prompt_internal(
 }
 
 /// Collect non-ignored directory names
-fn collect_dirs(abs: &Path, dir_pats: &[Pattern]) -> anyhow::Result<HashSet<String>> {
+fn collect_dirs(abs: &Path, dir_ignores: &[String]) -> anyhow::Result<HashSet<String>> {
     let mut dirs = HashSet::new();
     if !abs.is_dir() {
         return Ok(dirs);
@@ -374,9 +379,9 @@ fn collect_dirs(abs: &Path, dir_pats: &[Pattern]) -> anyhow::Result<HashSet<Stri
         }
         let abs_path = abs.join(&entry);
         if abs_path.is_dir() {
-            if !dir_pats.iter().any(|p| p.is_match(&entry)) {
+            if !dir_ignores.contains(&entry) {
                 dirs.insert(entry.clone());
-                let sub = collect_dirs(&abs_path, dir_pats)?;
+                let sub = collect_dirs(&abs_path, dir_ignores)?;
                 dirs.extend(sub);
             }
         }
@@ -384,38 +389,52 @@ fn collect_dirs(abs: &Path, dir_pats: &[Pattern]) -> anyhow::Result<HashSet<Stri
     Ok(dirs)
 }
 
+
 /// Walk directory recursively with proper indentation
 fn walk(
     abs: &Path,
     rel: &Path,
     current_indent: &str,
-    dir_pats: &[Pattern],
-    file_pats: &[Pattern],
-    prompt_pats: &[Pattern],
+    ignore_dirs: &[String],
+    ignore_files: &[String],
+    ignore_exts: &HashSet<String>,
     tree: &mut String,
     files: &mut Vec<PathBuf>,
 ) -> anyhow::Result<()> {
     let mut visible_entries: Vec<String> = Vec::new();
     for entry_res in fs::read_dir(abs)? {
         if let Ok(dir_entry) = entry_res {
-            let entry_name = dir_entry.file_name().to_string_lossy().into_owned();
-            if entry_name.starts_with('.') {
+            let entry_name_os = dir_entry.file_name();
+            let entry_name = entry_name_os.to_string_lossy();
+
+            // --- IGNORE LOGIC ---
+
+            // 1. Check for dotfiles, with exceptions for .env.example files.
+            if entry_name.starts_with('.') 
+                && entry_name != ".env.example" 
+                && entry_name != ".example.env" {
                 continue;
             }
 
-            let rel_path = rel.join(&entry_name);
-            let rel_path_str = rel_path.to_string_lossy();
-            let abs_path = abs.join(&entry_name);
+            let abs_path = abs.join(entry_name.as_ref());
+            let is_dir = abs_path.is_dir();
 
-            let ignore = if abs_path.is_dir() {
-                dir_pats.iter().any(|p| p.is_match(&rel_path_str))
+            // 2. Check against ignore lists using exact matches.
+            let ignore = if is_dir {
+                // Exact match for directory names
+                ignore_dirs.contains(&entry_name.to_string())
             } else {
-                file_pats.iter().any(|p| p.is_match(&rel_path_str))
-                    || prompt_pats.iter().any(|p| p.is_match(&rel_path_str))
+                // Exact match for full filename OR file extension
+                ignore_files.contains(&entry_name.to_string()) ||
+                abs_path.extension()
+                    .and_then(|s| s.to_str())
+                    .map(|ext| ignore_exts.contains(&ext.to_lowercase()))
+                    .unwrap_or(false)
             };
 
+
             if !ignore {
-                visible_entries.push(entry_name);
+                visible_entries.push(entry_name.into_owned());
             }
         }
     }
@@ -436,9 +455,9 @@ fn walk(
                 &abs_path,
                 &rel.join(entry),
                 &child_indent,
-                dir_pats,
-                file_pats,
-                prompt_pats,
+                ignore_dirs,
+                ignore_files,
+                ignore_exts,
                 tree,
                 files,
             )?;
@@ -448,14 +467,6 @@ fn walk(
         }
     }
     Ok(())
-}
-
-/// Compile ignore patterns
-fn compile_patterns(globs: &[String]) -> anyhow::Result<Vec<Pattern>> {
-    globs
-        .iter()
-        .map(|g| Pattern::parse(without_escape(g)).map_err(|e| anyhow::anyhow!(e.to_string())))
-        .collect()
 }
 
 /// ----------  Python module entry-point  ----------

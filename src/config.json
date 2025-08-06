@@ -44,7 +44,6 @@
         ".byebug_history",
         ".coverage",
         ".coveragerc",
-        ".env",
         ".env.development.local",
         ".env.local",
         ".env.test.local",
